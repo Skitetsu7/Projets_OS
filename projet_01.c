@@ -8,16 +8,11 @@
 int tab[board_size];
 int hit = 0;
 
-
 void capitalize_letter() {
   /*
   this function is use for capitalize the input
   */
-  // If nothing was input on keybord the code end
-  if (hit == 0) {
-    printf("\n nothing was input\n");
-    exit(EXIT_SUCCESS);
-  }
+  
   for (int j = 0; j < hit; j++) {
     if (tab[j] != '\n' && tab[j] >= 'a' && tab[j] <= 'z') {
       // print the input in capitals letters
@@ -31,9 +26,13 @@ void handler_alarm(int sig){
   /*
   This function capture the alarm, print and reinitialize the buffer
   */
+  // If nothing was input on keybord the code end
+  if (hit == 0) {
+    printf("\n nothing was input\n");
+    exit(EXIT_SUCCESS);
+  }
   capitalize_letter();
-  printf("\n");
-  printf("You have only five second \n");
+  printf("\nYou have only five second \n");
   // reinitialize the buffer and recall alarm
   hit = 0;
   alarm(5);
