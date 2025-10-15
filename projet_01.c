@@ -3,9 +3,11 @@
 #include <stdlib.h> //exit_success
 #include <unistd.h> //alarm
 //define variable
+#define False 0
 #define board_size 100
 int tab[board_size];
 int hit = 0;
+
 
 void capitalize_letter() {
   /*
@@ -42,7 +44,7 @@ int main() { //main function
   signal(SIGALRM, handler_alarm);
   printf("You have only five second to write: \n");
   alarm(5);
-  while (1) {
+  while (!False) {
     s = getchar();
     if (s != '\n' && hit < board_size - 1) {
       tab[hit++] = s;
