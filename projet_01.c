@@ -3,6 +3,7 @@
 #include <stdlib.h> //exit_success
 #include <unistd.h>
 //define variable
+#define True 1
 #define board_size 100
 int tab[board_size];
 int hit = 0;
@@ -39,7 +40,7 @@ int main() {
   signal(SIGALRM, handler_alarm);
   printf("You have only five second to write: \n");
   alarm(5);
-  while (1) {
+  while (True) {
     s = getchar();
     if (s != '\n' && hit < board_size - 1) {
       tab[hit++] = s;
