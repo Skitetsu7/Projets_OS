@@ -45,7 +45,7 @@ int main() { //main function; call the others function
   alarm(5);
   while (!False) {
     s = getchar();
-    if (s != '\n' && hit < board_size - 1) {
+    if (hit < board_size - 1) {
       tab[hit++] = s;
     }
   }
