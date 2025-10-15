@@ -1,49 +1,49 @@
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <signal.h> //signal
+#include <stdio.h> //printf
+#include <stdlib.h> //exit_success
 #include <unistd.h>
+//define variable
+#define board_size 100
+int tab[board_size];
+int hit = 0;
 
-// exo groupe
-#define taille_du_tableau 100
-int tab[taille_du_tableau];
-int frappe = 0;
-
-void accumule_frappe() {
-  // si il y a aucune frappe on quitte le code
-  if (frappe == 0) {
-    printf("\n Rien n'a été tapé depuis 5 secondes\n");
-    exit(0);
+void capitalize_letter() {
+  // If nothing was input on keybord the code end
+  if (hit == 0) {
+    printf("\n nothing was input\n");
+    exit(EXIT_SUCCESS);
   }
-  for (int j = 0; j < frappe; j++) {
-    // sert à manipuler m sans affecter la tab
-    tab[j];
+  for (int j = 0; j < hit; j++) {
     if (tab[j] != '\n' && tab[j] >= 'a' && tab[j] <= 'z') {
+      // print the input in capitals letters
       tab[j] -= 32;
     }
   printf("%c", tab[j]);
   }
-  // sert à faire l'affichage des lettres tapées et de les remettre en majuscules
 }
 
-void alarm_handler(int sig){
-  accumule_frappe();
+void handler_alarm(int sig){
+  /*
+  This function capture the alarm,put on capital letter and reinitialize the buffer
+  */
+  capitalize_letter();
   printf("\n");
-  printf("écrit fdp t'as 5sec \n");
-  // pour réinitialiser le buffer et remmettre le timer
-  frappe = 0;
+  printf("You have only five second \n");
+  // reinitialize the buffer and recall alarm
+  hit = 0;
   alarm(5);
 }
 
 int main() {
-  int s, i = 0;
-  signal(SIGALRM, alarm_handler);
-  printf("vous aves 5sec pour écrire une phrase: \n");
+  int s;
+  signal(SIGALRM, handler_alarm);
+  printf("You have only five second to write: \n");
   alarm(5);
   while (1) {
     s = getchar();
-    if (s != '\n' && frappe < taille_du_tableau - 1) {
-      tab[frappe++] = s;
+    if (s != '\n' && hit < board_size - 1) {
+      tab[hit++] = s;
     }
   }
-  return 0;
+  return EXIT_FAILURE;
 }
