@@ -1,14 +1,16 @@
 #include <signal.h> //signal
 #include <stdio.h> //printf
 #include <stdlib.h> //exit_success
-#include <unistd.h>
+#include <unistd.h> //alarm
 //define variable
-#define False 0
 #define board_size 100
 int tab[board_size];
 int hit = 0;
 
 void capitalize_letter() {
+  /*
+  this function is use for capitalize the input
+  */
   // If nothing was input on keybord the code end
   if (hit == 0) {
     printf("\n nothing was input\n");
@@ -25,7 +27,7 @@ void capitalize_letter() {
 
 void handler_alarm(int sig){
   /*
-  This function capture the alarm,put on capital letter and reinitialize the buffer
+  This function capture the alarm, print and reinitialize the buffer
   */
   capitalize_letter();
   printf("\n");
@@ -35,12 +37,12 @@ void handler_alarm(int sig){
   alarm(5);
 }
 
-int main() {
+int main() { //main function
   int s;
   signal(SIGALRM, handler_alarm);
   printf("You have only five second to write: \n");
   alarm(5);
-  while (!False) {
+  while (1) {
     s = getchar();
     if (s != '\n' && hit < board_size - 1) {
       tab[hit++] = s;
