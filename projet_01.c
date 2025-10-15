@@ -7,9 +7,8 @@
 #define taille_du_tableau 100
 int tab[taille_du_tableau];
 int frappe = 0;
-char m[taille_du_tableau]; // peut pas mettre des "" pour remplacer []
 
-void accumule_frappe(int sig) {
+void accumule_frappe() {
   // si il y a aucune frappe on quitte le code
   if (frappe == 0) {
     printf("\n Rien n'a été tapé depuis 5 secondes\n");
@@ -17,15 +16,17 @@ void accumule_frappe(int sig) {
   }
   for (int j = 0; j < frappe; j++) {
     // sert à manipuler m sans affecter la tab
-    m[j] = tab[j];
-    if (m[j] != '\n' && m[j] >= 'a' && m[j] <= 'z') {
-      m[j] -= 32;
+    tab[j];
+    if (tab[j] != '\n' && tab[j] >= 'a' && tab[j] <= 'z') {
+      tab[j] -= 32;
     }
+  printf("%c", tab[j]);
   }
   // sert à faire l'affichage des lettres tapées et de les remettre en majuscules
-  for (int j = 0; j < frappe; j++) {
-    printf("%c", m[j]);
-  }
+}
+
+void alarm_handler(int sig){
+  accumule_frappe();
   printf("\n");
   printf("écrit fdp t'as 5sec \n");
   // pour réinitialiser le buffer et remmettre le timer
@@ -35,7 +36,7 @@ void accumule_frappe(int sig) {
 
 int main() {
   int s, i = 0;
-  signal(SIGALRM, accumule_frappe);
+  signal(SIGALRM, alarm_handler);
   printf("vous aves 5sec pour écrire une phrase: \n");
   alarm(5);
   while (1) {
