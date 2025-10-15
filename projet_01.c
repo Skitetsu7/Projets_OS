@@ -13,7 +13,7 @@ void capitalize_letter() {
   this function is use for capitalize the input
   */
   
-  printf("Characters are now in capital letter:\n---------------------------------------------------\n");
+  printf("\nCharacters are now in capital letter:\n");
   for (int j = 0; j < hit; j++) {
     if (tab[j] != '\n' && tab[j] >= 'a' && tab[j] <= 'z') {
       // print the input in capitals letters
