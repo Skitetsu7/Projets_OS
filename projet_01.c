@@ -39,7 +39,7 @@ void handler_alarm(int sig){
   alarm(5);
 }
 
-int main() { //main function
+int main() { //main function; call the others function
   int s;
   signal(SIGALRM, handler_alarm);
   printf("You have only five second to write: \n");
