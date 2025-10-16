@@ -46,7 +46,8 @@ int main() { //main function; call the others function
   while (1) {
     s = getchar();
     if (hit < board_size - 1) {
-      tab[hit++] = s;
+      tab[hit] = s;
+      hit++;
     }
   }
   return EXIT_FAILURE;
