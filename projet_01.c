@@ -43,7 +43,7 @@ int main() { //main function; call the others function
   signal(SIGALRM, handler_alarm);
   printf("You have only five second to write: \n");
   alarm(5);
-  while (!False) {
+  while (1) {
     s = getchar();
     if (hit < board_size - 1) {
       tab[hit++] = s;
