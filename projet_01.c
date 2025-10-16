@@ -3,7 +3,6 @@
 #include <stdlib.h> //exit_success
 #include <unistd.h> //alarm
 //define variable
-#define False 0
 #define board_size 100
 int tab[board_size];
 int hit = 0;
