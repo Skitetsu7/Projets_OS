@@ -11,7 +11,6 @@ void capitalize_letter() {
   /*
   this function is use for capitalize the input
   */
-  
   printf("\nCharacters are now in capital letter:\n");
   for (int j = 0; j < hit; j++) {
     if (tab[j] != '\n' && tab[j] >= 'a' && tab[j] <= 'z') {
@@ -38,16 +37,17 @@ void handler_alarm(int sig){
   alarm(5);
 }
 
-int main() { //main function; call the others function
+int main() { 
+  //main function; call the others function
   int s;
-  signal(SIGALRM, handler_alarm);
+  signal(SIGALRM, handler_alarm); //The signal library allows you to associate an alarm signal with the handler_alarm function
   printf("You have only five second to write: \n");
   alarm(5);
   while (1) {
-    s = getchar();
+    s = getchar(); //read a typed character
     if (hit < board_size - 1) {
-      tab[hit] = s;
-      hit++;
+      tab[hit] = s; //store one character in the array at a time
+      hit++; //move to the next position
     }
   }
   return EXIT_FAILURE;
