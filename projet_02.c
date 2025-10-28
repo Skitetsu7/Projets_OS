@@ -21,10 +21,10 @@ struct circular * mkcircular (){
     struct circular * last = malloc(sizeof(struct circular ));
     first->size=0; //initialisation à 0
     // on crée une boucle en liant le premier au dernière élément
-    first->next  = last; 
-    last->next   = first; 
-    last->size   = 0; //initialisation à 0
-    return last; //principe FIFO
+    first->next= last; 
+    last->next=first; 
+    last->size= 0; //initialisation à 0
+    return last; //principe FIFO 
 }
 
 
