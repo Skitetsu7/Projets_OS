@@ -50,7 +50,6 @@ signed int extract ( struct circular * cycle ){
     */
     struct node* predecessor = cycle->head;
     struct node* new_node = cycle->head;
-    signed int extract_value = new_node->value;
     if (cycle->head == NULL){
         printf("no value, empty file \n");
         return 0;
