@@ -137,6 +137,6 @@ int main() {
     insert(c, 30);
     print_list(c);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
