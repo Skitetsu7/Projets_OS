@@ -46,26 +46,39 @@ void insert(struct circular* cycle, signed int elt) { //insert a new node in the
 
 
 
-int main() {    // main fonction for test
-    struct circular* c = mkcircular();  
-
-    insert(c, 10);
-    insert(c, 20);
-    insert(c, 30);
-
-    printf("Taille de la liste : %u\n", c->size);
-
-    // Affichage des valeurs pour vérifier la circularité
-    struct node* current = c->head;
-    for (int i = 0; i < c->size; i++) {
-        printf("Valeur : %d\n", current->value);
-        current = current->next;
+// Fonction pour afficher la liste circulaire avec flèches
+void print_list(struct circular* cycle) {
+    if (cycle->head == NULL) {
+        printf("Liste vide\n");
+        return;
     }
 
-    // Vérification que le dernier revient bien sur le premier
-    printf("Retour au début ? %s\n", (current == c->head) ? "Oui" : "Non");
+    struct node* current = cycle->head;
+    for (unsigned int i = 0; i < cycle->size; i++) {
+        printf("%d -> ", current->value);
+        current = current->next;
+    }
+    printf("(retour à la tête: %d)\n", cycle->head->value);
+}
+
+int main() {
+    struct circular* c = mkcircular();
+
+    // Premier test
+    printf("Ajout 10\n");
+    insert(c, 10);
+    print_list(c);
+
+    // Deuxième test
+    printf("Ajout 20\n");
+    insert(c, 20);
+    print_list(c);
+
+    // Troisième test
+    printf("Ajout 30\n");
+    insert(c, 30);
+    print_list(c);
 
     return 0;
 }
-
 
