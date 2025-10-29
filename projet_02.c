@@ -64,13 +64,10 @@ signed int extract ( struct circular * cycle ){
         }
         predecessor->next=new_node->next; //once the last element is found, it is connected to the second one
         cycle->head=new_node->next; //the second element becomes the head of the thread
-        new_node=NULL; //removes the old head
     }            
 if (cycle->size > 0) {
     cycle->size--;
 }
-printf("header value, delete value \n");
-return extract_value;
 }
 
 struct node* rotateToEven(struct circular* cycle) {
