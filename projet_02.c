@@ -43,6 +43,36 @@ void insert(struct circular* cycle, signed int elt) { //insert a new node in the
 
     cycle->size++; //increase the size of the list
 }
+
+signed int extract ( struct circular * cycle ){
+    /*remove the first element, in other words, the element with the very first address,
+     and transform the second element into the first.
+    */
+    struct node* predecessor = cycle->head;
+    struct node* new_node = cycle->head;
+    signed int extract_value = new_node->value;
+    if (cycle->head == NULL){
+        printf("no value, empty file \n");
+        return 0;
+    } 
+    else if (cycle->head->next == cycle->head){
+        cycle->head = NULL;  //If only one element remains, the list is cleared
+    } 
+    else{
+        while (predecessor->next != cycle->head) { //find the last element
+            predecessor = predecessor->next;
+        }
+        predecessor->next=new_node->next; //once the last element is found, it is connected to the second one
+        cycle->head=new_node->next; //the second element becomes the head of the thread
+        new_node=NULL; //removes the old head
+    }            
+if (cycle->size > 0) {
+    cycle->size--;
+}
+printf("header value, delete value \n");
+return extract_value;
+}
+
 struct node* rotateToEven(struct circular* cycle) {
     /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément pair , doit renvoyer cette élément, sinon faire une rotation*/
     if (cycle->size == 0)// si la liste est vide on return NULL
