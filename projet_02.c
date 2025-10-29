@@ -72,7 +72,7 @@ if (cycle->size > 0) {
 struct node* rotateToEven(struct circular* cycle) {
     /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément pair , doit renvoyer cette élément, sinon faire une rotation*/
     if (cycle->size == 0)// si la liste est vide on return NULL
-        printf('The list is empty')
+        printf('The list is empty');
         return NULL;
 
     unsigned int steps = 0;// initialise steps
