@@ -43,7 +43,28 @@ void insert(struct circular* cycle, signed int elt) { //insert a new node in the
 
     cycle->size++; //increase the size of the list
 }
-
+struct node* rotateToEven(struct circular* cycle) {
+    /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément pair , doit renvoyer cette élément*/
+    if (cycle->size == 0)// si la liste est vide on return NULL
+        return NULL;
+    unsigned int steps = 0;// initialise steps
+    //  1er rotation obligatoire
+    cycle->head = cycle->head->next;
+    // je dois implémenter step de 1 car head est mtn sur le 2 ème élément et step doit avoir la même valeur que head
+    steps++;
+    // boucle pour parcourir toute la liste jusqu'a que j'ai un élément pair
+    while (steps < cycle->size) {
+        // si l'élément est pair on s'arrette ici
+        if ((cycle->head->value % 2) == 0) {
+            return cycle->head; // on retourne le pointeur vers cet élément
+        }
+        // si c'est impair je continue à tourner
+        cycle->head = cycle->head->next;
+        steps++;
+    }
+    // Si on a parcouru toute la liste sans avoir d'éléments pair , on return NULL
+    return NULL;
+}
 
 
 // Fonction pour afficher la liste circulaire avec flèches
