@@ -71,38 +71,37 @@ if (cycle->size > 0) {
 
 struct node* rotateToEven(struct circular* cycle) {
     /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément pair , doit renvoyer cette élément, sinon faire une rotation*/
-    if (cycle->size == 0)// si la liste est vide on return NULL
-        printf('The list is empty');
+    if (cycle->size == 0){   // si la liste est vide on return NULL
+        printf("The list is empty");
         return NULL;
+    }
 
     unsigned int steps = 0;// initialise steps
-    printf('The list is : ');
+    printf("The list is : ");
     print_list(cycle);
     //  1er rotation obligatoire
     cycle->head = cycle->head->next;
-    printf(' The list after rotation is :');
+    printf("The list after rotation is :");
     print_list(cycle);
     // je dois implémenter step de 1 car head est mtn sur le 2 ème élément et step doit avoir la même valeur que head
     steps++;
-    printf("Head of the list: %d\n", cycle->head->value);
     // boucle pour parcourir toute la liste jusqu'a que j'ai un élément pair
     while (steps < cycle->size) {
         // si l'élément est pair on s'arrette ici
         if ((cycle->head->value % 2) == 0) {
-            printf('The final list is : ');
+            printf("The final list is : ");
             print_list(cycle);
             return cycle->head; // on retourne le pointeur vers cet élément
         }
         // si c'est impair je continue à tourner
         cycle->head = cycle->head->next;
-        printf('The list after rotation is : ');
+        printf("The list after rotation is : ");
         print_list(cycle);
         steps++;
     }
     // Si on a parcouru toute la liste sans avoir d'éléments pair , on return NULL
     return NULL;
 }
-
 
 // Fonction pour afficher la liste circulaire avec flèches
 void print_list(struct circular* cycle) {
