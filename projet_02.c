@@ -12,23 +12,20 @@ struct circular { // structure of the main circular list
 };
 
 struct circular *mkcircular() { // create a new circular list
-  struct circular *list =
-      malloc(sizeof(struct circular)); // dynamic memory allocation
+  struct circular *list = malloc(sizeof(struct circular)); // dynamic memory allocation
   list->size = 0;
   list->head = NULL;
   return list;
 }
 
 struct node *mknode(signed int v) { // create a new node
-  struct node *nd =
-      malloc(sizeof(struct node)); // dynamic memory allocation of the new node
+  struct node *nd = malloc(sizeof(struct node)); // dynamic memory allocation of the new node
   nd->value = v;
   nd->next = nd;
   return nd;
 }
 
-void insert(struct circular *cycle,
-            signed int elt) {          // insert a new node in the list
+void insert(struct circular *cycle, signed int elt) {          // insert a new node in the list
   struct node *new_node = mknode(elt); // use mknode for create the new node
 
   if (cycle->head == NULL) {                   // if empty list
@@ -62,30 +59,13 @@ signed int extract(struct circular *cycle) {
     while (predecessor->next != cycle->head) { // find the last element
       predecessor = predecessor->next;
     }
-    predecessor->next = new_node->next; // once the last element is found, it is
-                                        // connected to the second one
-    cycle->head =
-        new_node->next; // the second element becomes the head of the thread
+    predecessor->next = new_node->next; // once the last element is found, it is connected to the second one
+    cycle->head = new_node->next; // the second element becomes the head of the thread
   }
   if (cycle->size > 0) {
     cycle->size--;
   }
   return result;
-}
-
-// Fonction pour afficher la liste circulaire avec flèches
-void print_list(struct circular *cycle) {
-  if (cycle->head == NULL) {
-    printf("Liste vide\n");
-    return;
-  }
-
-  struct node *current = cycle->head;
-  for (unsigned int i = 0; i < cycle->size; i++) {
-    printf("%d -> ", current->value);
-    current = current->next;
-  }
-  printf("(retour à la tête: %d)\n", cycle->head->value);
 }
 
 struct node *rotateToEven(struct circular *cycle) {
@@ -161,27 +141,55 @@ struct node *rotateToOdd(struct circular *cycle) {
   return NULL;
 }
 
+void print_list(struct circular *cycle) {
+  /*The function displays the circular linked list in FIFO mode
+  */
+  if (cycle->head == NULL) {
+    printf("Empty list\n");
+    return;
+  }
+  struct node * predecessor = cycle->head; // begin at the head
+  unsigned int i= 0;
+  while(i<cycle->size){
+    printf("%d -> ", predecessor->value); // displays a list
+    predecessor = predecessor->next; //continuation to the next element
+    i++;
+  }
+  printf("(return to the head: %d)\n", cycle->head->value); //serves to remind us that the list is circular by showing the element at the top
+}
+
 int main() {
   struct circular *c = mkcircular();
-
-  // Premier test
-  printf("Ajout 10\n");
-  insert(c, 10);
-  print_list(c);
-
-  // Deuxième test
-  printf("Ajout 20\n");
-  insert(c, 15);
-  print_list(c);
-
-  // Troisième test
-  printf("Ajout 30\n");
-  insert(c, 30);
-  print_list(c);
-  rotateToEven(c);
-  rotateToOdd(c);
-  signed int extracted = extract(c);
-  print_list(c);
-  printf("%d\n", extracted);
-  return EXIT_SUCCESS;
+  int choix;
+  signed int choix_bis;
+  while(1){
+    printf("1) Type '1' if you want to display the linked list \n2) Type '2' if you want to insert an element at the end of the list \n3) Type '3' if you want to remove the element at the beginning of the list \n4) Type '4' if you want to reverse the list until it reaches an even number \n5) Type '5' if you want to reverse the list until it reaches an odd number\n ");
+    scanf("%d", &choix);
+    switch(choix){
+      case 1:
+        print_list(c);
+        break;
+      case 2:
+        printf("provide an integer to add to the end of the list: \n");
+        scanf("%d", &choix_bis);
+        insert(c, choix_bis);
+        print_list(c);
+        break;
+      case 3:{
+        signed int extract_value = extract(c);
+        printf("%d\n", extract_value);
+        print_list(c);
+        break;
+      }
+      case 4:
+        rotateToEven(c);
+        break;
+      case 5:
+        rotateToOdd(c);
+        break;
+      default:
+        printf("invalid choice, start again\n");
+    }
+  }
+    return EXIT_SUCCESS;
 }
