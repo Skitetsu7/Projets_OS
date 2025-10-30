@@ -1,5 +1,5 @@
 #include <stdio.h>  //printf
-#include <stdlib.h> // EXIT_SUCCESS, malloc ( . . ) , c a l l o c ( . . ) , NULL
+#include <stdlib.h> // EXIT_SUCCESS, malloc(), calloc(), NULL
 
 struct node { // structure of a node
   signed int value;
