@@ -141,21 +141,21 @@ struct node *rotateToOdd(struct circular *cycle) {
   // je dois implémenter step de 1 car head est mtn sur le 2 ème élément et step
   // doit avoir la même valeur que head
   steps++;
-  // boucle pour parcourir toute la liste jusqu'a que j'ai un élément pair
+  // boucle pour parcourir toute la liste jusqu'a que j'ai un élément impair
   while (steps < cycle->size) {
-    // si l'élément est pair on s'arrette ici
+    // si l'élément est impair on s'arrette ici
     if ((cycle->head->value % 2) != 0) {
       printf("The final list is : ");
       print_list(cycle);
       return cycle->head; // on retourne le pointeur vers cet élément
     }
-    // si c'est impair je continue à tourner
+    // si c'est pair je continue à tourner
     cycle->head = cycle->head->next;
     printf("The list after rotation is : ");
     print_list(cycle);
     steps++;
   }
-  // Si on a parcouru toute la liste sans avoir d'éléments pair , on return NULL
+  // Si on a parcouru toute la liste sans avoir d'éléments impair , on return NULL
   return NULL;
 }
 
