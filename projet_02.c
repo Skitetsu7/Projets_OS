@@ -68,6 +68,23 @@ signed int extract(struct circular *cycle) {
   return result;
 }
 
+void print_list(struct circular *cycle) {
+  /*The function displays the circular linked list in FIFO mode
+  */
+  if (cycle->head == NULL) {
+    printf("Empty list\n");
+    return;
+  }
+  struct node * predecessor = cycle->head; // begin at the head
+  unsigned int i= 0;
+  while(i<cycle->size){
+    printf("%d -> ", predecessor->value); // displays a list
+    predecessor = predecessor->next; //continuation to the next element
+    i++;
+  }
+  printf("(return to the head: %d)\n", cycle->head->value); //serves to remind us that the list is circular by showing the element at the top
+}
+
 struct node *rotateToEven(struct circular *cycle) {
   /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément
    * pair , doit renvoyer cette élément, sinon faire une rotation*/
@@ -141,22 +158,6 @@ struct node *rotateToOdd(struct circular *cycle) {
   return NULL;
 }
 
-void print_list(struct circular *cycle) {
-  /*The function displays the circular linked list in FIFO mode
-  */
-  if (cycle->head == NULL) {
-    printf("Empty list\n");
-    return;
-  }
-  struct node * predecessor = cycle->head; // begin at the head
-  unsigned int i= 0;
-  while(i<cycle->size){
-    printf("%d -> ", predecessor->value); // displays a list
-    predecessor = predecessor->next; //continuation to the next element
-    i++;
-  }
-  printf("(return to the head: %d)\n", cycle->head->value); //serves to remind us that the list is circular by showing the element at the top
-}
 
 int main() {
   struct circular *c = mkcircular();
@@ -164,6 +165,7 @@ int main() {
   signed int choix_bis;
   while(1){
     printf("1) Type '1' if you want to display the linked list \n2) Type '2' if you want to insert an element at the end of the list \n3) Type '3' if you want to remove the element at the beginning of the list \n4) Type '4' if you want to reverse the list until it reaches an even number \n5) Type '5' if you want to reverse the list until it reaches an odd number\n ");
+    printf("Give your choice: ");
     scanf("%d", &choix);
     switch(choix){
       case 1:
