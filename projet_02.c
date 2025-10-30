@@ -52,6 +52,7 @@ signed int extract(struct circular *cycle) {
   */
   struct node *predecessor = cycle->head;
   struct node *new_node = cycle->head;
+  signed int result = predecessor->value;
   if (cycle->head == NULL) {
     printf("no value, empty file \n");
     return 1;
@@ -69,7 +70,7 @@ signed int extract(struct circular *cycle) {
   if (cycle->size > 0) {
     cycle->size--;
   }
-  return 0;
+  return result;
 }
 
 // Fonction pour afficher la liste circulaire avec flèches
@@ -155,7 +156,8 @@ struct node *rotateToOdd(struct circular *cycle) {
     print_list(cycle);
     steps++;
   }
-  // Si on a parcouru toute la liste sans avoir d'éléments impair , on return NULL
+  // Si on a parcouru toute la liste sans avoir d'éléments impair , on return
+  // NULL
   return NULL;
 }
 
@@ -178,5 +180,8 @@ int main() {
   print_list(c);
   rotateToEven(c);
   rotateToOdd(c);
+  signed int extracted = extract(c);
+  print_list(c);
+  printf("%d\n", extracted);
   return EXIT_SUCCESS;
 }
