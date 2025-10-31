@@ -86,9 +86,9 @@ void print_list(struct circular *cycle) {
 }
 
 struct node *rotateToEven(struct circular *cycle) {
-  /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément
-   * pair , doit renvoyer cette élément, sinon faire une rotation*/
-  if (cycle->size == 0) { // si la liste est vide on return NULL
+  /* Run trough all element of a list and it return the first even's element else
+  it does a rotation*/
+  if (cycle->size == 0) { // list empty -> return NULL
     printf("The list is empty");
     return NULL;
   }
@@ -96,35 +96,35 @@ struct node *rotateToEven(struct circular *cycle) {
   unsigned int steps = 0; // initialise steps
   printf("The list is : ");
   print_list(cycle);
-  //  1er rotation obligatoire
+  //  first rotation
   cycle->head = cycle->head->next;
   printf("The list after rotation is :");
   print_list(cycle);
-  // je dois implémenter step de 1 car head est mtn sur le 2 ème élément et step
-  // doit avoir la même valeur que head
+  // I must increment step by one because head is on the second element
+  // must have the same value as head
   steps++;
-  // boucle pour parcourir toute la liste jusqu'a que j'ai un élément pair
+  // loop until we found an even element
   while (steps < cycle->size) {
-    // si l'élément est pair on s'arrette ici
+    // break point if even
     if ((cycle->head->value % 2) == 0) {
       printf("The final list is : ");
       print_list(cycle);
-      return cycle->head; // on retourne le pointeur vers cet élément
+      return cycle->head; // return pointer
     }
-    // si c'est impair je continue à tourner
+    // if odd we rotate
     cycle->head = cycle->head->next;
     printf("The list after rotation is : ");
     print_list(cycle);
     steps++;
   }
-  // Si on a parcouru toute la liste sans avoir d'éléments pair , on return NULL
+  // if there is no even element -> return nul
   return NULL;
 }
 
 struct node *rotateToOdd(struct circular *cycle) {
-  /*Cette fonction doit parcourir la liste et dès qu'elle tombe sur un élément
-   * impair , doit renvoyer cette élément, sinon faire une rotation*/
-  if (cycle->size == 0) { // si la liste est vide on return NULL
+  /* Run trough all element of a list and it return the first odd's element else
+  it does a rotation*/
+  if (cycle->size == 0) { // list empty -> return NULL
     printf("The list is empty");
     return NULL;
   }
@@ -132,29 +132,28 @@ struct node *rotateToOdd(struct circular *cycle) {
   unsigned int steps = 0; // initialise steps
   printf("The list is : ");
   print_list(cycle);
-  //  1er rotation obligatoire
+  //  first rotation
   cycle->head = cycle->head->next;
   printf("The list after rotation is :");
   print_list(cycle);
-  // je dois implémenter step de 1 car head est mtn sur le 2 ème élément et step
-  // doit avoir la même valeur que head
+  // I must increment step by one because head is on the second element
+  // must have the same value as head
   steps++;
-  // boucle pour parcourir toute la liste jusqu'a que j'ai un élément impair
+  // loop until we found an odd element
   while (steps < cycle->size) {
-    // si l'élément est impair on s'arrette ici
+    // break point if odd
     if ((cycle->head->value % 2) != 0) {
       printf("The final list is : ");
       print_list(cycle);
-      return cycle->head; // on retourne le pointeur vers cet élément
+      return cycle->head; // return pointer
     }
-    // si c'est pair je continue à tourner
+    // if even continue rotate
     cycle->head = cycle->head->next;
     printf("The list after rotation is : ");
     print_list(cycle);
     steps++;
   }
-  // Si on a parcouru toute la liste sans avoir d'éléments impair , on return
-  // NULL
+  // if there is no even element -> return nul
   return NULL;
 }
 
