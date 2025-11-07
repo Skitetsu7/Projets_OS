@@ -10,7 +10,7 @@ printf("%s%sHello %s%s World %s \n",
   black,Bred,
   normal);
 ```
-- La librairie utilise les couleurs 8 bits ![[images/color_palette.png]]
+- La librairie utilise les couleurs 8 bits ![](images/color_palette.png)
 - Les couleurs foncée prennent une Majuscule `Red` ≠ `red`
 - Pour modifier le fond ajoutez B devant le nom de la couleur `Bred`,`BBlue`
 - Pour revenir aux couleurs par défaut de votre terminal, utilisez `normal`
