@@ -56,3 +56,6 @@ dkms.conf
 
 # pour sacha et son mac de singe
 .DS_Store
+
+# compressed
+.zip
