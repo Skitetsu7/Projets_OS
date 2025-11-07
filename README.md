@@ -11,5 +11,5 @@ printf("%s%sHello %s%s World %s \n",
   normal);
 ```
 Les couleurs foncée prennent une Majuscule `Red` ≠ `red`
-Pour modifier le fond ajoutez B devant le nom de la couleur
+Pour modifier le fond ajoutez B devant le nom de la couleur `Bred` ≠ `BRed`
 Pour revenir aux couleurs par défaut de votre terminal, utilisez `normal`
