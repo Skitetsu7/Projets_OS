@@ -35,10 +35,4 @@
 #define Bpurple "\033[48;5;13m"
 #define Bcyan   "\033[48;5;14m"
 
-/*
-Use it like this
-printf("%s%sHello %s%s World %s \n",
-  red,Bcyan,
-  black,Bred,
-  normal);
-*/
+
