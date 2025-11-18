@@ -23,11 +23,15 @@ void print_array(int array[], int start, int final) {
   }
   printf("\n");
 }
+
 void merge_sort(int array[], index start, index final) {
   if (start < final) {
     index middle = floor((start + final) / 2);
     merge_sort(array, start, middle);
     merge_sort(array, middle + 1, final);
+    printf("on arrive au merge \n");
+    print_array(array, start, final);
+
     merge(array, start, middle, final);
   }
 }
@@ -76,6 +80,10 @@ void merge(int array[], index start, index middle, index final) {
 
 int main() {
   int tab[] = {4, 8, 2, 0, 1, 2, 3};
+  // dedicate a thread to each part of tab, divide original tab depending on
+  // size of array array must be at least two times longer than the number of
+  // thread used (thread ≤ 2*len(tab))
+
   print_array(tab, 0, 6);
   merge_sort(tab, 0, 6);
   print_array(tab, 0, 6);
