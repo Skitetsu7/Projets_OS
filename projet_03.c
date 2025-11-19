@@ -5,11 +5,14 @@
 #include <time.h>
 
 #define MAX_THREADS 2
-#define RUNS 100
-#define N 1000000 // taille du tableau
+#define RUNS 10
+#define N 1000000
 
 typedef unsigned int index;
 typedef unsigned int length;
+
+void merge(int array[], index start, index middle, index final);
+void merge_sort(int array[], index start, index final);
 
 struct argument {
     int start, final;
@@ -24,40 +27,6 @@ void show(int array[], length count) {
     printf("\n");
 }
 
-void merge(int array[], index start, index middle, index final) {
-    length countL = middle - start + 1;
-    int *arrayL = malloc(countL * sizeof(int));
-    for (index i = 0; i < countL; i++)
-        arrayL[i] = array[start + i];
-
-    length countR = final - middle;
-    int *arrayR = malloc(countR * sizeof(int));
-    for (index i = 0; i < countR; i++)
-        arrayR[i] = array[middle + 1 + i];
-
-    index i = 0, j = 0, k = start;
-    while (i < countL && j < countR) {
-        if (arrayL[i] <= arrayR[j])
-            array[k++] = arrayL[i++];
-        else
-            array[k++] = arrayR[j++];
-    }
-    while (i < countL) array[k++] = arrayL[i++];
-    while (j < countR) array[k++] = arrayR[j++];
-
-    free(arrayL);
-    free(arrayR);
-}
-
-void merge_sort(int array[], index start, index final) {
-    if (start < final) {
-        index middle = floor((start + final) / 2);
-        merge_sort(array, start, middle);
-        merge_sort(array, middle + 1, final);
-        merge(array, start, middle, final);
-    }
-}
-
 void *merge_sort_threads(void *args) {
     struct argument *arg = (struct argument *)args;
     int start = arg->start;
@@ -70,7 +39,7 @@ void *merge_sort_threads(void *args) {
         pthread_exit(NULL);
     }
 
-    index middle = floor((start + final) / 2);
+    index middle = (start + final) / 2;
 
     pthread_t t1;
     int created_thread = 0;
@@ -105,6 +74,41 @@ void *merge_sort_threads(void *args) {
     merge(array, start, middle, final);
     free(arg);
     return NULL;
+}
+
+void merge_sort(int array[], index start, index final) {
+    if (start < final) {
+        index middle = (start + final) / 2;
+        merge_sort(array, start, middle);
+        merge_sort(array, middle + 1, final);
+        merge(array, start, middle, final);
+    }
+}
+
+void merge(int array[], index start, index middle, index final) {
+    length countL = middle - start + 1;
+    int *arrayL = malloc(countL * sizeof(int));
+    length countR = final - middle;
+    int *arrayR = malloc(countR * sizeof(int));
+    index i, j, k;
+
+    for (i = 0; i < countL; i++)
+        arrayL[i] = array[start + i];
+    for (j = 0; j < countR; j++)
+        arrayR[j] = array[middle + 1 + j];
+
+    i = 0; j = 0; k = start;
+    while (i < countL && j < countR) {
+        if (arrayL[i] <= arrayR[j])
+            array[k++] = arrayL[i++];
+        else
+            array[k++] = arrayR[j++];
+    }
+    while (i < countL) array[k++] = arrayL[i++];
+    while (j < countR) array[k++] = arrayR[j++];
+
+    free(arrayL);
+    free(arrayR);
 }
 
 long int nanos_between(struct timespec *final, struct timespec *start) {
@@ -145,6 +149,7 @@ int main() {
     }
 
     printf("moyenne time on %d runs : %ld ns, for %d threads\n", RUNS, total_time / RUNS, MAX_THREADS);
+
     free(list);
     return 0;
 }
