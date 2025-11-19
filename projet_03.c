@@ -15,7 +15,7 @@ void merge_sort(int array[], index start, index final);
 struct argument {
     int start, final;
     int *array;
-    int *threads_remaining; // AJOUT : compteur de threads restants
+    int *threads_remaining;
 };
 
 void show(int array[], length count) {
@@ -41,7 +41,6 @@ void *merge_sort_threads(void *args) {
     pthread_t t1;
     int created_thread = 0;
 
-    // Création du thread gauche si threads restants
     if (*threads_remaining > 0) {
         (*threads_remaining)--;
         struct argument *first = malloc(sizeof(struct argument));
@@ -53,7 +52,6 @@ void *merge_sort_threads(void *args) {
         created_thread = 1;
     }
 
-    // Partie droite
     if (*threads_remaining > 0) {
         (*threads_remaining)--;
         struct argument *rest = malloc(sizeof(struct argument));
@@ -66,7 +64,6 @@ void *merge_sort_threads(void *args) {
         merge_sort(ar, middle + 1, final);
     }
 
-    // Attente thread gauche si créé
     if (created_thread) {
         pthread_join(t1, NULL);
     }
@@ -91,19 +88,19 @@ int main(int argc, char *argv[]) {
     }
 
     for (int i = 0; i < N; ++i)
-        tableau[i] = N - 1 - i; /* exemple décroissant */
+        tableau[i] = N - 1 - i;
 
     int longueur = N;
     struct timespec start, final;
     clock_gettime(CLOCK_REALTIME, &start);
 
-    int threads_remaining = MAX_THREADS; // AJOUT : compteur initial
+    int threads_remaining = MAX_THREADS;
 
     struct argument *try = malloc(sizeof(struct argument));
     try->array = tableau;
     try->start = 0;
     try->final = longueur - 1;
-    try->threads_remaining = &threads_remaining; // AJOUT : passer le compteur
+    try->threads_remaining = &threads_remaining;
 
     show(tableau, longueur);
     merge_sort_threads(try);
@@ -115,7 +112,6 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 
-/* ----- Merge et Merge_sort exactement comme ton code original ----- */
 void merge_sort(int array[], index start, index final) {
     if (start < final) {
         index middle = floor((start + final) / 2);
