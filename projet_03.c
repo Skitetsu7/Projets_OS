@@ -2,162 +2,170 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
-#define MAX_THREADS 2
+int NB_THREAD = 1;
+#define TEST_NBR 10
+#define LEN_TAB 1000000000
 typedef unsigned int index;
 typedef unsigned int length;
 
 void merge(int array[], index start, index middle, index final);
-void merge_sort(int array[], index start, index final);
 
-struct argument {
-    int start, final;
-    int *array;
-    int *threads_remaining;
+long int nanos_between(struct timespec *final, struct timespec *start) {
+  time_t seconds = final->tv_sec - start->tv_sec;
+  long int nanoseconds = final->tv_nsec - start->tv_nsec;
+  return seconds * 1e9 + nanoseconds;
+}
+struct thread_arg {
+  int start;
+  int end;
+  int *array;
 };
-void merge_sort(int array[], index start, index final) {
-    if (start < final) {
-        index middle = floor((start + final) / 2);
-        merge_sort(array, start, middle);
-        merge_sort(array, middle + 1, final);
-        merge(array, start, middle, final);
-    }
+
+void *merge_sort(void *arguments) {
+  struct thread_arg *args = (void *)arguments;
+  int start = args->start;
+  int final = args->end;
+  int *array = args->array;
+  if (start < final) {
+    index middle = floor((start + final) / 2);
+    struct thread_arg left;
+    left.start = start;
+    left.end = middle;
+    left.array = array;
+    struct thread_arg right;
+    right.start = middle + 1;
+    right.end = final;
+    right.array = array;
+    merge_sort(&left);
+    merge_sort(&right);
+    merge(array, start, middle, final);
+  }
+  return NULL;
 }
 
 void merge(int array[], index start, index middle, index final) {
-    length countL = middle - start + 1;
-    int *arrayL = malloc(countL * sizeof(int));
-    index currentL, currentR;
-    for (currentL = 0; currentL < countL; currentL++)
-        arrayL[currentL] = array[start + currentL];
+  length countL = middle - start + 1;
+  int *arrayL = malloc(countL * sizeof(int));
+  index currentL, currentR;
+  for (currentL = 0; currentL < countL; currentL++)
+    arrayL[currentL] = array[start + currentL];
 
-    length countR = final - middle;
-    int *arrayR = malloc(countR * sizeof(int));
-    for (currentR = 0; currentR < countR; currentR++)
-        arrayR[currentR] = array[middle + 1 + currentR];
+  length countR = final - middle;
+  int *arrayR = malloc(countR * sizeof(int));
+  for (currentR = 0; currentR < countR; currentR++)
+    arrayR[currentR] = array[middle + 1 + currentR];
 
-    currentL = 0;
-    currentR = 0;
-    index current;
-    for (current = start; current <= final && currentL < countL && currentR < countR; current++) {
-        if (arrayL[currentL] <= arrayR[currentR]) {
-            array[current] = arrayL[currentL];
-            currentL++;
-        } else {
-            array[current] = arrayR[currentR];
-            currentR++;
-        }
+  currentL = 0;
+  currentR = 0;
+  index current;
+  for (current = start;
+       current <= final && currentL < countL && currentR < countR; current++) {
+    if (arrayL[currentL] <= arrayR[currentR]) {
+      array[current] = arrayL[currentL];
+      currentL++;
+    } else { // arrayL[currentL] > arrayR[currentR]
+      array[current] = arrayR[currentR];
+      currentR++;
+    }
+  }
+
+  // If <arrayL> was completely consumed, copy the remainder of <arrayR> over
+  // the remainder of <array>
+  if (currentL >= countL)
+    while (currentR < countR) {
+      array[current] = arrayR[currentR];
+      current++;
+      currentR++;
     }
 
-    if (currentL >= countL)
-        while (currentR < countR) {
-            array[current] = arrayR[currentR];
-            current++;
-            currentR++;
-        }
-    if (currentR >= countR)
-        while (currentL < countL) {
-            array[current] = arrayL[currentL];
-            current++;
-            currentL++;
-        }
+  // If <arrayR> was completely consumed, copy the remainder of <arrayL> over
+  // the remainder of <array>
+  if (currentR >= countR)
+    while (currentL < countL) {
+      array[current] = arrayL[currentL];
+      current++;
+      currentL++;
+    }
 
-    free(arrayL);
-    free(arrayR);
+  free(arrayL);
+  free(arrayR);
 }
+
+int tableau[] = {2, 27, 3, 49, 98, 12, 4, 1};
+int longueur = sizeof(tableau) / sizeof(int);
 
 void show(int array[], length count) {
-    for (index i = 0; i < count; i++)
-        printf("%d ", array[i]);
-    printf("\n");
+  for (index i = 0; i < count; i++)
+    printf("%d ", array[i]);
+  printf("\n");
 }
 
-void *merge_sort_threads(void *args) {
-    struct argument *arg = (struct argument *)args;
-    int *ar = arg->array;
-    int start = arg->start;
-    int final = arg->final;
-    int *threads_remaining = arg->threads_remaining;
+int main() {
+while(NB_THREAD < 8){
+    long unsigned int result[TEST_NBR];
 
-    if (start >= final) {
-        free(arg);
-        pthread_exit(NULL);
+    for (int thread = 0; thread < TEST_NBR; thread++) {
+
+        int *tableau = malloc(LEN_TAB * sizeof(int));
+        if (!tableau) {
+            exit(EXIT_FAILURE);
+        }
+
+        for (int i = 0; i < LEN_TAB; i++) {
+            tableau[i] = rand() % 10000;
+        }
+
+        int longueur = LEN_TAB;
+
+        pthread_t T[NB_THREAD];
+        int *découpage = malloc(sizeof(int) * NB_THREAD);
+        for (int i = 0; i < NB_THREAD; i++) {
+            découpage[i] = (i + 1)*longueur/ NB_THREAD - 1;
+        }
+
+        struct thread_arg *argument = malloc(sizeof(struct thread_arg) * NB_THREAD);
+        argument[0].array = tableau;
+        argument[0].start = 0;
+        argument[0].end = découpage[0];
+
+        for (int i = 1; i < NB_THREAD; i++) {
+            argument[i].array =tableau;
+            argument[i].start= découpage[i-1] + 1;
+            argument[i].end = découpage[i];
+        }
+
+        struct timespec s, f;
+        clock_gettime(CLOCK_REALTIME, &s);
+
+        for (int i = 0;i <NB_THREAD;i++)
+            pthread_create(&T[i], NULL, merge_sort, &argument[i]);
+
+        for (int i= 0; i < NB_THREAD; i++)
+            pthread_join(T[i], NULL);
+
+        int start =0;
+        for (int i = 0; i < NB_THREAD - 1; i++) {
+            merge(tableau, start, découpage[i], découpage[i + 1]);
+        }
+
+        clock_gettime(CLOCK_REALTIME, &f);
+
+        result[thread] = nanos_between(&f, &s);
+
+        free(argument);
+        free(découpage);
+        free(tableau);
     }
 
-    index middle = floor((start + final) / 2);
+    long unsigned int m = 0;
+    for (int i = 0; i < TEST_NBR; i++)
+        m += result[i];
 
-    pthread_t t1;
-    int created_thread = 0;
+    m = m/TEST_NBR;
+    printf("\n\npour %d threads %d tests -> moyenne de %lu ns\n",NB_THREAD, TEST_NBR, m);
 
-    if (*threads_remaining > 0) {
-        (*threads_remaining)--;
-        struct argument *first = malloc(sizeof(struct argument));
-        first->start = start;
-        first->final = middle;
-        first->array = ar;
-        first->threads_remaining = threads_remaining;
-        pthread_create(&t1, NULL, merge_sort_threads, first);
-        created_thread = 1;
-    }
-
-    if (*threads_remaining > 0) {
-        (*threads_remaining)--;
-        struct argument *rest = malloc(sizeof(struct argument));
-        rest->start = middle + 1;
-        rest->final = final;
-        rest->array = ar;
-        rest->threads_remaining = threads_remaining;
-        merge_sort_threads(rest);
-    } else {
-        merge_sort(ar, middle + 1, final);
-    }
-
-    if (created_thread) {
-        pthread_join(t1, NULL);
-    }
-
-    merge(ar, start, middle, final);
-    free(arg);
-    return NULL;
-}
-
-long int nanos_between(struct timespec *final, struct timespec *start) {
-    time_t seconds = final->tv_sec - start->tv_sec;
-    long int nanoseconds = final->tv_nsec - start->tv_nsec;
-    return seconds * 1e9 + nanoseconds;
-}
-
-int main(int argc, char *argv[]) {
-    const int N = 3001;
-    int *tableau = malloc(N * sizeof(int));
-    if (!tableau) {
-        perror("malloc");
-        return EXIT_FAILURE;
-    }
-
-    for (int i = 0; i < N; ++i)
-        tableau[i] = N - 1 - i;
-
-    int longueur = N;
-    struct timespec start, final;
-    clock_gettime(CLOCK_REALTIME, &start);
-
-    int threads_remaining = MAX_THREADS;
-
-    struct argument *try = malloc(sizeof(struct argument));
-    try->array = tableau;
-    try->start = 0;
-    try->final = longueur - 1;
-    try->threads_remaining = &threads_remaining;
-
-    show(tableau, longueur);
-    merge_sort_threads(try);
-
-    clock_gettime(CLOCK_REALTIME, &final);
-
-    show(tableau, longueur);
-    printf("Time elapsed: %ld ns\n\n", nanos_between(&final, &start));
+    NB_THREAD++;
+  }
     return EXIT_SUCCESS;
 }
