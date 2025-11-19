@@ -5,7 +5,7 @@
 #include <time.h>
 
 #define MAX_THREADS 2
-#define RUNS 10
+#define RUNS 100
 #define N 1000000 // taille du tableau
 
 typedef unsigned int index;
