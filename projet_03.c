@@ -11,9 +11,6 @@
 typedef unsigned int index;
 typedef unsigned int length;
 
-void merge(int array[], index start, index middle, index final);
-void merge_sort(int array[], index start, index final);
-
 struct argument {
     int start, final;
     int *array;
@@ -25,64 +22,6 @@ void show(int array[], length count) {
         printf("%d ", array[i]);
     if (count > 100) printf("...");
     printf("\n");
-}
-
-void *merge_sort_threads(void *args) {
-    struct argument *arg = (struct argument *)args;
-    int start = arg->start;
-    int final = arg->final;
-    int *array = arg->array;
-    int *threads_remaining = arg->threads_remaining;
-
-    if (start >= final) {
-        free(arg);
-        pthread_exit(NULL);
-    }
-
-    index middle = (start + final) / 2;
-
-    pthread_t t1;
-    int created_thread = 0;
-
-    if (*threads_remaining > 0) {
-        (*threads_remaining)--;
-        struct argument *left = malloc(sizeof(struct argument));
-        left->start = start;
-        left->final = middle;
-        left->array = array;
-        left->threads_remaining = threads_remaining;
-        pthread_create(&t1, NULL, merge_sort_threads, left);
-        created_thread = 1;
-    }
-
-    if (*threads_remaining > 0) {
-        (*threads_remaining)--;
-        struct argument *right = malloc(sizeof(struct argument));
-        right->start = middle + 1;
-        right->final = final;
-        right->array = array;
-        right->threads_remaining = threads_remaining;
-        merge_sort_threads(right);
-    } else {
-        merge_sort(array, middle + 1, final);
-    }
-
-    if (created_thread) {
-        pthread_join(t1, NULL);
-    }
-
-    merge(array, start, middle, final);
-    free(arg);
-    return NULL;
-}
-
-void merge_sort(int array[], index start, index final) {
-    if (start < final) {
-        index middle = (start + final) / 2;
-        merge_sort(array, start, middle);
-        merge_sort(array, middle + 1, final);
-        merge(array, start, middle, final);
-    }
 }
 
 void merge(int array[], index start, index middle, index final) {
@@ -111,6 +50,64 @@ void merge(int array[], index start, index middle, index final) {
     free(arrayR);
 }
 
+void merge_sort(int array[], index start, index final) {
+    if (start < final) {
+        index middle = (start + final) / 2;
+        merge_sort(array, start, middle);
+        merge_sort(array, middle + 1, final);
+        merge(array, start, middle, final);
+    }
+}
+
+void *merge_sort_threads(void *arg_void) {
+    struct argument *try = (struct argument *)arg_void;
+    int start = try->start;
+    int final = try->final;
+    int *tableau = try->array;
+    int *threads_remaining = try->threads_remaining;
+
+    if (start >= final) {
+        free(try);
+        pthread_exit(NULL);
+    }
+
+    index middle = (start + final) / 2;
+
+    pthread_t t1;
+    int created_thread = 0;
+
+    if (*threads_remaining > 0) {
+        (*threads_remaining)--;
+        struct argument *left = malloc(sizeof(struct argument));
+        left->start = start;
+        left->final = middle;
+        left->array = tableau;
+        left->threads_remaining = threads_remaining;
+        pthread_create(&t1, NULL, merge_sort_threads, left);
+        created_thread = 1;
+    }
+
+    if (*threads_remaining > 0) {
+        (*threads_remaining)--;
+        struct argument *right = malloc(sizeof(struct argument));
+        right->start = middle + 1;
+        right->final = final;
+        right->array = tableau;
+        right->threads_remaining = threads_remaining;
+        merge_sort_threads(right);
+    } else {
+        merge_sort(tableau, middle + 1, final);
+    }
+
+    if (created_thread) {
+        pthread_join(t1, NULL);
+    }
+
+    merge(tableau, start, middle, final);
+    free(try);
+    return NULL;
+}
+
 long int nanos_between(struct timespec *final, struct timespec *start) {
     time_t seconds = final->tv_sec - start->tv_sec;
     long int nanoseconds = final->tv_nsec - start->tv_nsec;
@@ -134,13 +131,13 @@ int main() {
         struct timespec start, final;
         clock_gettime(CLOCK_REALTIME, &start);
 
-        struct argument *arg = malloc(sizeof(struct argument));
-        arg->start = 0;
-        arg->final = N - 1;
-        arg->array = tableau;
-        arg->threads_remaining = &threads_remaining;
+        struct argument *try = malloc(sizeof(struct argument));
+        try->start = 0;
+        try->final = N - 1;
+        try->array = tableau;
+        try->threads_remaining = &threads_remaining;
 
-        merge_sort_threads(arg);
+        merge_sort_threads(try);
 
         clock_gettime(CLOCK_REALTIME, &final);
 
