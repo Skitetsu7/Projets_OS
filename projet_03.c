@@ -110,6 +110,7 @@ void *merge_sort(void *arguments) {
 
 
 int main() {
+srand(time(NULL));
 while(NB_THREAD < THREAD_LIM){
     long unsigned int result[TEST_NBR];
 
@@ -162,7 +163,7 @@ while(NB_THREAD < THREAD_LIM){
             if(test== 0){
             printf("thread_%d[%d-%d]\n",i+1,argument[i].start,argument[i].end);
             printf("array qu'il va trié\n");
-            show(tableau, argument[i].start, argument[i].end);
+            show(tableau, argument[i].start, argument[i].end+1);
             }
             pthread_create(&T[i], NULL, merge_sort, &argument[i]);
 }
