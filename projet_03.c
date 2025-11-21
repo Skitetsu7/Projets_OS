@@ -1,11 +1,15 @@
-#include <math.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <math.h>
+#include <pthread.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <unistd.h>
 
 int NB_THREAD = 1;
 #define TEST_NBR 10
-#define LEN_TAB 1000000000
+#define LEN_TAB 30
 typedef unsigned int index;
 typedef unsigned int length;
 
@@ -92,12 +96,10 @@ void merge(int array[], index start, index middle, index final) {
   free(arrayR);
 }
 
-int tableau[] = {2, 27, 3, 49, 98, 12, 4, 1};
-int longueur = sizeof(tableau) / sizeof(int);
 
-void show(int array[], length count) {
-  for (index i = 0; i < count; i++)
-    printf("%d ", array[i]);
+void show(int array[], int start, int end) {
+  for (start; start < end; start++)
+    printf("%d ", array[start]);
   printf("\n");
 }
 
@@ -106,6 +108,7 @@ while(NB_THREAD < 8){
     long unsigned int result[TEST_NBR];
 
     for (int thread = 0; thread < TEST_NBR; thread++) {
+    
 
         int *tableau = malloc(LEN_TAB * sizeof(int));
         if (!tableau) {
@@ -117,6 +120,11 @@ while(NB_THREAD < 8){
         }
 
         int longueur = LEN_TAB;
+        if (thread == 0){
+            printf("liste pas trié");
+            show(tableau, 0, longueur);
+        }
+
 
         pthread_t T[NB_THREAD];
         int *découpage = malloc(sizeof(int) * NB_THREAD);
@@ -138,8 +146,14 @@ while(NB_THREAD < 8){
         struct timespec s, f;
         clock_gettime(CLOCK_REALTIME, &s);
 
-        for (int i = 0;i <NB_THREAD;i++)
+        for (int i = 0;i <NB_THREAD;i++){
+            if(thread== 0){
+            printf("thread_%d[%d-%d]\n",i+1,argument[i].start,argument[i].end);
+            printf("array qu'il va trié\n");
+            show(tableau, argument[i].start, argument[i].end);
+            }
             pthread_create(&T[i], NULL, merge_sort, &argument[i]);
+}
 
         for (int i= 0; i < NB_THREAD; i++)
             pthread_join(T[i], NULL);
@@ -148,15 +162,23 @@ while(NB_THREAD < 8){
         for (int i = 0; i < NB_THREAD - 1; i++) {
             merge(tableau, start, découpage[i], découpage[i + 1]);
         }
+        
 
         clock_gettime(CLOCK_REALTIME, &f);
 
         result[thread] = nanos_between(&f, &s);
 
+        if (thread == 0){
+            printf("tableau trié: ");
+            show(tableau,0, longueur);
+        }
         free(argument);
         free(découpage);
         free(tableau);
+        
+
     }
+    
 
     long unsigned int m = 0;
     for (int i = 0; i < TEST_NBR; i++)
