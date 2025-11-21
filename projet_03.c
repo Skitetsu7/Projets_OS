@@ -1,31 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <math.h>
 #include <pthread.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+//number of thread wich increment after a tes
 int NB_THREAD = 1;
+//number of time your thread is tested
 #define TEST_NBR 10
-#define LEN_TAB 30
+// lenght of the table you want to sort
+#define LEN_TAB 1000000000
+
 typedef unsigned int index;
 typedef unsigned int length;
 
-void merge(int array[], index start, index middle, index final);
-
+// calculus of passed time
 long int nanos_between(struct timespec *final, struct timespec *start) {
   time_t seconds = final->tv_sec - start->tv_sec;
   long int nanoseconds = final->tv_nsec - start->tv_nsec;
   return seconds * 1e9 + nanoseconds;
 }
+// argument used to array passed to a thread
 struct thread_arg {
   int start;
   int end;
   int *array;
 };
 
+// the fonction was a modified to take a structure as argument so it can be executed by a thread
 void *merge_sort(void *arguments) {
   struct thread_arg *args = (void *)arguments;
   int start = args->start;
@@ -33,6 +34,7 @@ void *merge_sort(void *arguments) {
   int *array = args->array;
   if (start < final) {
     index middle = floor((start + final) / 2);
+    // copie of left and right to give it  in a new merge sort
     struct thread_arg left;
     left.start = start;
     left.end = middle;
@@ -96,35 +98,31 @@ void merge(int array[], index start, index middle, index final) {
   free(arrayR);
 }
 
-
-void show(int array[], int start, int end) {
-  for (start; start < end; start++)
-    printf("%d ", array[start]);
+//show as been a bit modified
+void show(int array[], length count) {
+  for (index i = 0; i < count; i++)
+    printf("%d ", array[i]);
   printf("\n");
 }
 
 int main() {
+// start a test
 while(NB_THREAD < 8){
+//initialise array of result
     long unsigned int result[TEST_NBR];
 
-    for (int thread = 0; thread < TEST_NBR; thread++) {
-    
-
+    for (int test =0; test < TEST_NBR; test++) {
+        // stock array in RAM
         int *tableau = malloc(LEN_TAB * sizeof(int));
         if (!tableau) {
             exit(EXIT_FAILURE);
         }
-
+        //stock value in array
         for (int i = 0; i < LEN_TAB; i++) {
             tableau[i] = rand() % 10000;
         }
 
         int longueur = LEN_TAB;
-        if (thread == 0){
-            printf("liste pas trié");
-            show(tableau, 0, longueur);
-        }
-
 
         pthread_t T[NB_THREAD];
         int *découpage = malloc(sizeof(int) * NB_THREAD);
@@ -146,14 +144,8 @@ while(NB_THREAD < 8){
         struct timespec s, f;
         clock_gettime(CLOCK_REALTIME, &s);
 
-        for (int i = 0;i <NB_THREAD;i++){
-            if(thread== 0){
-            printf("thread_%d[%d-%d]\n",i+1,argument[i].start,argument[i].end);
-            printf("array qu'il va trié\n");
-            show(tableau, argument[i].start, argument[i].end);
-            }
+        for (int i = 0;i <NB_THREAD;i++)
             pthread_create(&T[i], NULL, merge_sort, &argument[i]);
-}
 
         for (int i= 0; i < NB_THREAD; i++)
             pthread_join(T[i], NULL);
@@ -162,23 +154,15 @@ while(NB_THREAD < 8){
         for (int i = 0; i < NB_THREAD - 1; i++) {
             merge(tableau, start, découpage[i], découpage[i + 1]);
         }
-        
 
         clock_gettime(CLOCK_REALTIME, &f);
 
-        result[thread] = nanos_between(&f, &s);
+        result[test] = nanos_between(&f, &s);
 
-        if (thread == 0){
-            printf("tableau trié: ");
-            show(tableau,0, longueur);
-        }
         free(argument);
         free(découpage);
         free(tableau);
-        
-
     }
-    
 
     long unsigned int m = 0;
     for (int i = 0; i < TEST_NBR; i++)
