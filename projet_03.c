@@ -26,31 +26,6 @@ struct thread_arg {
   int end;
   int *array;
 };
-
-// modification to take void* arguments as parameters 
-void *merge_sort(void *arguments) {
-  struct thread_arg *args = (void *)arguments;
-  int start = args->start;
-  int final = args->end;
-  int *array = args->array;
-  if (start < final) {
-    index middle = floor((start + final) / 2);
-    // copy for left and right size of the array
-    struct thread_arg left;
-    left.start = start;
-    left.end = middle;
-    left.array = array;
-    struct thread_arg right;
-    right.start = middle + 1;
-    right.end = final;
-    right.array = array;
-    merge_sort(&left);
-    merge_sort(&right);
-    merge(array, start, middle, final);
-  }
-  return NULL;
-}
-
 void merge(int array[], index start, index middle, index final) {
   length countL = middle - start + 1;
   int *arrayL = malloc(countL * sizeof(int));
@@ -101,10 +76,38 @@ void merge(int array[], index start, index middle, index final) {
 
 // we changed show to print start and end of the array we want to show
 void show(int array[], int start, int end) {
-  for (start; start < end; start++)
+  while (start<end){
+
     printf("%d ", array[start]);
+    start++;
+  }
   printf("\n");
 }
+// modification to take void* arguments as parameters 
+void *merge_sort(void *arguments) {
+  struct thread_arg *args = (void *)arguments;
+  int start = args->start;
+  int final = args->end;
+  int *array = args->array;
+  if (start < final) {
+    index middle = floor((start + final) / 2);
+    // copy for left and right size of the array
+    struct thread_arg left;
+    left.start = start;
+    left.end = middle;
+    left.array = array;
+    struct thread_arg right;
+    right.start = middle + 1;
+    right.end = final;
+    right.array = array;
+    merge_sort(&left);
+    merge_sort(&right);
+    merge(array, start, middle, final);
+  }
+  return NULL;
+}
+
+
 
 int main() {
 while(NB_THREAD < THREAD_LIM){
