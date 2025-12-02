@@ -80,6 +80,16 @@ void *philosophize(void *argument) {
   while (1) {
     think(me);
     // Acquiring chopsticks
+    if (me == PHILOSOPHER_COUNT-1){
+      acquire(me, RIGHT(me));
+      sleep(6); // Forcing deadlock occurrence
+      acquire(me, LEFT(me));
+      eat(me);
+      // Releasing chopsticks
+      release(me, RIGHT(me));
+      release(me, LEFT(me));
+    }
+    else {
     acquire(me, LEFT(me));
     sleep(6); // Forcing deadlock occurrence
     acquire(me, RIGHT(me));
@@ -87,6 +97,7 @@ void *philosophize(void *argument) {
     // Releasing chopsticks
     release(me, LEFT(me));
     release(me, RIGHT(me));
+    }
   }
 }
 
