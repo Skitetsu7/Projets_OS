@@ -58,7 +58,7 @@ void eat(identifier me) {
     printf("LEFT(%ld) - RIGHT(%ld)\n", LEFT(me), RIGHT(me));
   }
   else{
-    printf("Il ne peut pas manger normalement\n");
+    printf("%s Il ne peut pas manger normalement\n", grey);
   }
   sleep(delay);
 }
