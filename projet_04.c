@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "colors.h"
 
 #define PHILOSOPHER_COUNT 5
 #define NONE (-1)
@@ -21,15 +22,44 @@ identifier waitOn[PHILOSOPHER_COUNT];
 // Is a given chopstick held by a philosopher or NONE ?e
 identifier heldBy[PHILOSOPHER_COUNT];
 
+const char*couleur(identifier me){
+    int identifiant_philosophe= me%PHILOSOPHER_COUNT;
+    // assigning a color to each philosopher
+    if (identifiant_philosophe == 0){
+        return Red;
+    }
+    if (identifiant_philosophe == 1){
+        return Blue;
+    }
+    if (identifiant_philosophe == 2){
+        return Yellow;
+    }
+    if (identifiant_philosophe == 3){ 
+        return Green;
+    }
+    if (identifiant_philosophe == 4){ 
+        return Purple;
+    }
+    return normal;
+}
+
 void think(identifier me) {
   unsigned int delay = (rand() % 5) + 1;
-  printf("[%ld] Starting to THINK ... (%u)\n", me, delay);
+  printf("%s[%ld] Starting to THINK ... (%u)\n",couleur(me), me, delay);
   sleep(delay);
 }
 
 void eat(identifier me) {
   unsigned int delay = (rand() % 5) + 1;
-  printf("[%ld] Starting to EAT ... (%u)\n", me, delay);
+  // baguette detenue
+  int droite= (heldBy[RIGHT(me)] == me), gauche= (heldBy[LEFT(me)] == me);
+  printf("%s[%ld] Starting to EAT ... (%u): ",couleur(me), me, delay);
+  if(gauche && droite){
+    printf("LEFT(%ld) - RIGHT(%ld)\n", LEFT(me), RIGHT(me));
+  }
+  else{
+    printf("Il ne peut pas manger normalement\n");
+  }
   sleep(delay);
 }
 
@@ -61,14 +91,14 @@ unsigned int count = 0;
 
 
 void release(identifier me, identifier chopstick_id) {
-  printf("[%ld] Releasing chopstick %ld\n", me, chopstick_id);
+  printf("%s[%ld] Releasing chopstick %ld\n", couleur(me), me, chopstick_id);
   heldBy[chopstick_id] = NONE;
   pthread_mutex_unlock(&chopsticks[chopstick_id]);
 }
 
 int acquire(identifier me, identifier chopstick_id) {
 
-  printf("[%ld] Picking up chopstick %ld\n", me, chopstick_id);
+  printf("%s[%ld] Picking up chopstick %ld\n",couleur(me), me, chopstick_id);
 
   waitOn[me] = chopstick_id;
 
@@ -90,7 +120,7 @@ int acquire(identifier me, identifier chopstick_id) {
 
   waitOn[me] = NONE;
   heldBy[chopstick_id] = me;
-  printf("[%ld] Acquired chopstick %ld\n", me, chopstick_id);
+  printf("%s[%ld] Acquired chopstick %ld\n",couleur(me), me, chopstick_id);
   return 0;
   
 }
