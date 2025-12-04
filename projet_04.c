@@ -66,14 +66,15 @@ void release(identifier me, identifier chopstick_id) {
   pthread_mutex_unlock(&chopsticks[chopstick_id]);
 }
 
-int acquire(identifier me, identifier chopstick_id, char side) {
+int acquire(identifier me, identifier chopstick_id) {
 
   printf("[%ld] Picking up chopstick %ld\n", me, chopstick_id);
 
   waitOn[me] = chopstick_id;
 
-  if (pthread_mutex_trylock(&chopsticks[(chopstick_id+1)%PHILOSOPHER_COUNT]) && side == 'l'){
+  if (pthread_mutex_trylock(&chopsticks[RIGHT(me)])){
     release(me, chopstick_id);
+    waitOn[me] = NONE;
     return -1;
   }
 
@@ -94,9 +95,9 @@ void *philosophize(void *argument) {
   while (1) {
     think(me);
     // Acquiring chopsticks
-    if (acquire(me, LEFT(me), 'l') == 0){
+    if (acquire(me, LEFT(me)) == 0){
     //sleep(6); // Forcing deadlock occurrence
-    acquire(me, RIGHT(me), 'r');
+    acquire(me, RIGHT(me));
     eat(me);
     // Releasing chopsticks
     release(me, LEFT(me));
