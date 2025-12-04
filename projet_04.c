@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "colors.h"
 
-#define PHILOSOPHER_COUNT 5
+#define PHILOSOPHER_COUNT 6
 #define NONE (-1)
 #define ABSENT 0
 #define PRESENT 1
@@ -23,7 +23,7 @@ identifier waitOn[PHILOSOPHER_COUNT];
 identifier heldBy[PHILOSOPHER_COUNT];
 
 const char*couleur(identifier me){
-    int identifiant_philosophe= me%PHILOSOPHER_COUNT;
+    int identifiant_philosophe= me%(PHILOSOPHER_COUNT-1);
     // assigning a color to each philosopher
     switch(identifiant_philosophe){
         case 0:
@@ -36,8 +36,9 @@ const char*couleur(identifier me){
         return Green;
         case 4:
         return Purple;
-    return normal;
+    
     }
+    return normal;
 }
 
 void think(identifier me) {
