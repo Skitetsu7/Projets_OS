@@ -134,7 +134,7 @@ void *philosophize(void *argument) {
 
     if (l){
       l = acquire(me, LEFT(me));}
-    sleep(6); // Forcing deadlock occurrence
+    sleep(0); // Forcing deadlock occurrence
     if (r){
       r = acquire(me, RIGHT(me));}
   
