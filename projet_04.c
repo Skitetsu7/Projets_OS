@@ -58,16 +58,7 @@ unsigned int count = 0;
   return (count == PHILOSOPHER_COUNT) ? PRESENT : ABSENT;
 }
 
-void acquire(identifier me, identifier chopstick_id) {
-  printf("[%ld] Picking up chopstick %ld\n", me, chopstick_id);
-  waitOn[me] = chopstick_id;
-  if (detect_deadlock() == PRESENT)
-    printf("DEADLOCK !\n");
-  pthread_mutex_lock(&chopsticks[chopstick_id]);
-  waitOn[me] = NONE;
-  heldBy[chopstick_id] = me;
-  printf("[%ld] Acquired chopstick %ld\n", me, chopstick_id);
-}
+
 
 void release(identifier me, identifier chopstick_id) {
   printf("[%ld] Releasing chopstick %ld\n", me, chopstick_id);
@@ -75,24 +66,37 @@ void release(identifier me, identifier chopstick_id) {
   pthread_mutex_unlock(&chopsticks[chopstick_id]);
 }
 
+int acquire(identifier me, identifier chopstick_id, char side) {
+
+  printf("[%ld] Picking up chopstick %ld\n", me, chopstick_id);
+
+  waitOn[me] = chopstick_id;
+
+  if (pthread_mutex_trylock(&chopsticks[(chopstick_id+1)%PHILOSOPHER_COUNT]) && side == 'l'){
+    release(me, chopstick_id);
+    return -1;
+  }
+
+  if (detect_deadlock() == PRESENT)
+    printf("DEADLOCK !\n");
+
+  pthread_mutex_lock(&chopsticks[chopstick_id]);
+
+  waitOn[me] = NONE;
+  heldBy[chopstick_id] = me;
+  printf("[%ld] Acquired chopstick %ld\n", me, chopstick_id);
+  return 0;
+  
+}
+
 void *philosophize(void *argument) {
   identifier me = (unsigned long)argument;
   while (1) {
     think(me);
     // Acquiring chopsticks
-    if (me == PHILOSOPHER_COUNT-1){
-      acquire(me, RIGHT(me));
-      sleep(6); // Forcing deadlock occurrence
-      acquire(me, LEFT(me));
-      eat(me);
-      // Releasing chopsticks
-      release(me, RIGHT(me));
-      release(me, LEFT(me));
-    }
-    else {
-    acquire(me, LEFT(me));
-    sleep(6); // Forcing deadlock occurrence
-    acquire(me, RIGHT(me));
+    if (acquire(me, LEFT(me), 'l') == 0){
+    //sleep(6); // Forcing deadlock occurrence
+    acquire(me, RIGHT(me), 'r');
     eat(me);
     // Releasing chopsticks
     release(me, LEFT(me));
