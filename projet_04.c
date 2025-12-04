@@ -25,22 +25,19 @@ identifier heldBy[PHILOSOPHER_COUNT];
 const char*couleur(identifier me){
     int identifiant_philosophe= me%PHILOSOPHER_COUNT;
     // assigning a color to each philosopher
-    if (identifiant_philosophe == 0){
+    switch(identifiant_philosophe){
+        case 0:
         return Red;
-    }
-    if (identifiant_philosophe == 1){
+        case 1:
         return Blue;
-    }
-    if (identifiant_philosophe == 2){
+        case 2:
         return Yellow;
-    }
-    if (identifiant_philosophe == 3){ 
+        case 3:
         return Green;
-    }
-    if (identifiant_philosophe == 4){ 
+        case 4:
         return Purple;
-    }
     return normal;
+    }
 }
 
 void think(identifier me) {
