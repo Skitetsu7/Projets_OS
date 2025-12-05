@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "colors.h"
 
-#define PHILOSOPHER_COUNT 5
+#define PHILOSOPHER_COUNT 6
 #define NONE (-1)
 #define ABSENT 0
 #define PRESENT 1
