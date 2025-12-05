@@ -23,7 +23,7 @@ identifier waitOn[PHILOSOPHER_COUNT];
 identifier heldBy[PHILOSOPHER_COUNT];
 
 const char*couleur(identifier me){
-    int identifiant_philosophe= me%(PHILOSOPHER_COUNT-1);
+    int identifiant_philosophe= me% 5;
     // assigning a color to each philosopher
     switch(identifiant_philosophe){
         case 0:
@@ -86,8 +86,6 @@ unsigned int count = 0;
   return (count == PHILOSOPHER_COUNT) ? PRESENT : ABSENT;
 }
 
-
-
 void release(identifier me, identifier chopstick_id) {
   printf("%s[%ld] Releasing chopstick %ld\n", couleur(me), me, chopstick_id);
   heldBy[chopstick_id] = NONE;
@@ -100,34 +98,38 @@ int acquire(identifier me, identifier chopstick_id) {
 
   waitOn[me] = chopstick_id;
 
+  if (detect_deadlock() == PRESENT)
+    printf("DEADLOCK !\n");
+
+  //using try lock to lock if it's possible
   if (pthread_mutex_trylock(&chopsticks[chopstick_id])){
+    //in case trylock fail
     waitOn[me] = NONE;
-    //printf("RIGHT :if (%ld == %d && %d == %d)\n",chopstick_id,RIGHT(me), heldBy[LEFT(me)],me);
+    //we failed to lock the stick on the right and we have a stick in the left hand
     if (chopstick_id == RIGHT(me) && heldBy[LEFT(me)]==me)
+    //release our left stick
     {release(me, LEFT(me));}
-    //printf("LEFT :if (%ld == %d && %d == %d)\n",chopstick_id,LEFT(me),heldBy[RIGHT(me)],me);
+    //we failed to lock the stick on the left and we have a stick in the right hand
     if (chopstick_id == LEFT(me) && heldBy[RIGHT(me)]==me)
+    //release our left stick
     {release(me,RIGHT(me));}
   
     return -1;
   }
 
-  if (detect_deadlock() == PRESENT)
-    printf("DEADLOCK !\n");
-
-
   waitOn[me] = NONE;
   heldBy[chopstick_id] = me;
   printf("%s[%ld] Acquired chopstick %ld\n",couleur(me), me, chopstick_id);
   return 0;
-  
 }
 
 void *philosophize(void *argument) {
   identifier me = (unsigned long)argument;
+  //acquired detector
   int l,r;
 
   while (1) {
+    //init to fail
     l = -1;
     r = -1;
     think(me);
@@ -138,10 +140,12 @@ void *philosophize(void *argument) {
     sleep(6); // Forcing deadlock occurrence
     if (r){
       r = acquire(me, RIGHT(me));}
-  
-    if(!l&&!r){
-    eat(me);}
-    // Releasing chopsticks
+
+    // if we got one in each hand
+    if(!l&&!r)
+    eat(me);
+    
+    // Releasing chopsticks if we have one
     if (!l)
     release(me, LEFT(me));
     if (!r)
@@ -151,16 +155,21 @@ void *philosophize(void *argument) {
 }
 
 int main(int argc, char *argv[]) {
+  //init random
   srand(time(0));
+  //create mutex
   for (identifier i = 0; i < PHILOSOPHER_COUNT; i++) {
     waitOn[i] = NONE;
     heldBy[i] = NONE;
     pthread_mutex_init(&chopsticks[i], NULL);
   }
+  // create thread
   for (identifier p = 0; p < PHILOSOPHER_COUNT; p++)
     pthread_create(&philosophers[p], NULL, philosophize, (void *)p);
+  //wait thread
   for (identifier p = 0; p < PHILOSOPHER_COUNT; p++)
     pthread_join(philosophers[p], NULL);
+  // kill thread
   for (unsigned int b = 0; b < PHILOSOPHER_COUNT; b++)
     pthread_mutex_destroy(&chopsticks[b]);
   return EXIT_SUCCESS;
