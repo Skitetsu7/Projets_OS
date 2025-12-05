@@ -17,4 +17,4 @@ printf("%s%sHello %s%s World %s \n",
 - Pour modifier le fond ajoutez B devant le nom de la couleur `Bred`,`BBlue`
 - Pour revenir aux couleurs par défaut de votre terminal, utilisez `normal`
 ## Implémentation diné des philosophes
-![](main.mp4)
+![](/main.mp4)
