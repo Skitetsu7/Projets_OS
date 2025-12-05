@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "colors.h"
 
-#define PHILOSOPHER_COUNT 6
+#define PHILOSOPHER_COUNT 5
 #define NONE (-1)
 #define ABSENT 0
 #define PRESENT 1
@@ -140,11 +140,13 @@ void *philosophize(void *argument) {
       r = acquire(me, RIGHT(me));}
   
     if(!l&&!r){
-    eat(me);
+    eat(me);}
     // Releasing chopsticks
+    if (!l)
     release(me, LEFT(me));
+    if (!r)
     release(me, RIGHT(me));
-    }
+    
   }
 }
 
