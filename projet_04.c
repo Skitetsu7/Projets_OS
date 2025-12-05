@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include "colors.h"
 
-#define PHILOSOPHER_COUNT 6
+#define PHILOSOPHER_COUNT 5
 #define NONE (-1)
 #define ABSENT 0
 #define PRESENT 1
@@ -23,8 +23,8 @@ identifier waitOn[PHILOSOPHER_COUNT];
 identifier heldBy[PHILOSOPHER_COUNT];
 
 const char*couleur(identifier me){
-    int identifiant_philosophe= me%PHILOSOPHER_COUNT;
-    // assigning a color to each philosopheraa
+    int identifiant_philosophe= me%(PHILOSOPHER_COUNT-1);
+    // assigning a color to each philosopher
     switch(identifiant_philosophe){
         case 0:
         return Red;
@@ -140,11 +140,13 @@ void *philosophize(void *argument) {
       r = acquire(me, RIGHT(me));}
   
     if(!l&&!r){
-    eat(me);
+    eat(me);}
     // Releasing chopsticks
+    if (!l)
     release(me, LEFT(me));
+    if (!r)
     release(me, RIGHT(me));
-    }
+    
   }
 }
 
