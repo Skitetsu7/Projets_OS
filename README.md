@@ -17,4 +17,6 @@ printf("%s%sHello %s%s World %s \n",
 - Pour modifier le fond ajoutez B devant le nom de la couleur `Bred`,`BBlue`
 - Pour revenir aux couleurs par défaut de votre terminal, utilisez `normal`
 
-https://youtu.be/eBvgsyshKa8
+[![Watch the video](https://img.youtube.com/vi/eBvgsyshKa8/maxresdefault.jpg)](https://youtu.be/eBvgsyshKa8)
+
+### [Watch this video on YouTube](https://youtu.be/eBvgsyshKa8)
