@@ -19,4 +19,4 @@ printf("%s%sHello %s%s World %s \n",
 
 
 
-### [Diner des philosophe](https://youtu.be/eBvgsyshKa8)
+### [Diner des philosophes](https://youtu.be/eBvgsyshKa8)
