@@ -16,3 +16,7 @@ printf("%s%sHello %s%s World %s \n",
 - Les couleurs foncée prennent une Majuscule `Red` ≠ `red`
 - Pour modifier le fond ajoutez B devant le nom de la couleur `Bred`,`BBlue`
 - Pour revenir aux couleurs par défaut de votre terminal, utilisez `normal`
+
+
+
+### [Diner des philosophes](https://youtu.be/eBvgsyshKa8)
