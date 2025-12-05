@@ -23,8 +23,8 @@ identifier waitOn[PHILOSOPHER_COUNT];
 identifier heldBy[PHILOSOPHER_COUNT];
 
 const char*couleur(identifier me){
-    int identifiant_philosophe= me%(PHILOSOPHER_COUNT-1);
-    // assigning a color to each philosopher
+    int identifiant_philosophe= me%PHILOSOPHER_COUNT;
+    // assigning a color to each philosopheraa
     switch(identifiant_philosophe){
         case 0:
         return Red;
