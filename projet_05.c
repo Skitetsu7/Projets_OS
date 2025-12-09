@@ -65,6 +65,11 @@ int add(int argc,char const *argv[])
         perror("Erreur d'ouverture du fichier");
         return -1;
     }
+    char name[20];
+    char firstname[20];
+    char email[50];
+    char phonenumber[20];
+    char status[10];
 
     
 
@@ -127,11 +132,7 @@ int main() {
             }
 
             case 4: {
-                char name[20];
-                char firstname[20];
-                char email[50];
-                char phonenumber[20];
-                char status[10];
+                
                 add(argc,argv);
                 break;
             }
