@@ -56,12 +56,11 @@ void print_BD(int file){
 
 
 
-
-int delete(int argc,char const *argv[]){
+int suppression(int argc,char const *argv[]){
     char email[50];
     char buffer[BUFFER_SIZE];
     bool found = false;
-    int file = open(argv[0], O_RDONLY), right=0;
+    int file = open(argv[0], O_RDONLY), line_end= 0, right = 0;
     if (file == -1) {
         perror("Erreur d'ouverture du fichier");
         return -1;
@@ -75,35 +74,38 @@ int delete(int argc,char const *argv[]){
     close(file);
     printf("Donne l'adresse mail: \n");
     scanf("%s", email);
-    for(int j=0; j<bytes_read; j++){
-        if(j==0 || buffer[j-1]=='\n'){//arrête le tableau à la 1ère ligne
+    for(int j=0; j<=bytes_read; j++){//loop on the file
+        if(j==bytes_read || buffer[j]=='\n'){//stop each buffer by a line (j==bytes_read because at end we don't have \n)
+            int line_start=j; // start by the end of each line
             found=false;
-            right =0;
-        }
-        // chercher lignes
-        if(found==false){
-            if(buffer[j]==email[right]){
-                right++;
-                if(right==strlen(email)){
-                    found=true;
+            // search line of the email on the buffer
+            for(int i=line_end; i<line_start; i++){
+                right = 0;
+                while(1){
+                    if(email[right]!=buffer[i+right]){
+                        break;
+                    }
+                    right++;
                 }
-            }
-            else{
-                right=0;
-            }
-        }
+                if(email[right]=='\0'){
+                    found=true; // if the email is find
+                    break;
+                    }
 
-        // supprimer ligne
-        if(found==true){
-            if(buffer[j]=='\n'){
-                found=false;
-            }
-            else{
-                buffer[j] = ' '; //ecraser la valeur courante par la suivante
+            }  
+            if(found==true){
+                int len=line_start-line_end; // the end minus the bigging to know the lenght
+                for(int k=line_end; k+len<bytes_read; k++){
+                    int norme=k+len+1;
+                    buffer[k]=buffer[norme]; //necessary to erase the space
+                    }
+                bytes_read-=len+1; //more forward
+                j=line_end-1;
+                }
+            line_end=j+1;
             }
         }
-        }
-    file = open(argv[0], O_WRONLY | O_TRUNC); // nessecaire d'écrire dans le fichier pour supprimer
+    file = open(argv[0], O_WRONLY | O_TRUNC); // necessary to write to the file to delete
     if (file == -1) {
         perror("write");
         return -1;
@@ -225,7 +227,7 @@ int main() {
             case 2:
                 break;
             case 3: {
-                delete(1, (const char *[]){"tp5_base_de_donné.txt"});
+                supression(1, (const char *[]){"tp5_base_de_donné.txt"});
                 break;
             }
             case 4: {
