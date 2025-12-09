@@ -3,6 +3,60 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+#define BUFFER_SIZE 1024
+#define BUFFER_ACTIF_MEMBER 100
+#define BUFFER_INACTIF_MEMBER 100
+
+void print_BD(int file){
+    /*print the list of actif and inactif members
+    */
+    char line[BUFFER_SIZE];   //all initialization
+    char actif_member[BUFFER_ACTIF_MEMBER][BUFFER_SIZE];
+    char inactif_member[BUFFER_INACTIF_MEMBER][BUFFER_SIZE];
+    unsigned int index = 0;
+    unsigned int line_number = 1;
+    unsigned int actif_count = 0;
+    unsigned int inactif_count = 0;
+    char ch ;
+
+
+    while ( read ( file , &ch , 1) != 0){ //read the file char by char
+        if (ch == '\n'){  //line end
+            line [ index ] = '\0';  //string end
+            if (strstr(line, "actif")){  //if actif member
+                strcpy(actif_member[actif_count], line);  //copy the line in actif member
+                actif_count++;   //increase the number of actif
+            }
+            else if (strstr(line, "inactif")){  //if inactif member
+                strcpy(inactif_member[inactif_count], line);  //copy the line in inactif member
+                inactif_count++;  //increasse the number of inactif
+            }
+            index = 0; //reser index for the next line
+        }
+        else {
+            line[index] = ch; //add the char in line
+        }
+    }
+    printf("==============actif member=============\n");   //print actif member
+    for(int i = 0; i< actif_count; i++){
+        printf("%s\n", actif_member[i]);
+    }
+    printf("==============inactif member=============\n");  //print inactif member
+    for(int i = 0; i<inactif_count; i++){
+        printf("%s\n", inactif_member[i]);
+    }
+}
+
+
+
+
 int add(int argc,char const *argv[])
 {
     
