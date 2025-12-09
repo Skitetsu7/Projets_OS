@@ -24,18 +24,20 @@ void print_BD(int file){
     while ( read ( file , &ch , 1) != 0){ //read the file char by char
         if (ch == '\n'){  //line end
             line [ index ] = '\0';  //string end
-            if (strstr(line, "actif")){  //if actif member
-                strcpy(actif_member[actif_count], line);  //copy the line in actif member
-                actif_count++;   //increase the number of actif
-            }
-            else if (strstr(line, "inactif")){  //if inactif member
+            if (strstr(line, "inactif")){  //if inactif member
                 strcpy(inactif_member[inactif_count], line);  //copy the line in inactif member
                 inactif_count++;  //increasse the number of inactif
             }
+            else (strstr(line, "actif")){  //if actif member
+                strcpy(actif_member[actif_count], line);  //copy the line in actif member
+                actif_count++;   //increase the number of actif
+            }
+             
             index = 0; //reser index for the next line
         }
         else {
             line[index] = ch; //add the char in line
+            index++;
         }
     }
     printf("==============actif member=============\n");   //print actif member
