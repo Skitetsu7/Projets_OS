@@ -172,7 +172,7 @@ int main() {
         printf("3. Delete \n");
         printf("4. Add \n");
         printf("0. Leave \n");
-        printf("Your choice  : ");
+        printf("Your choice :\n ");
         scanf("%d", &choice);
 
         switch (choice) {
