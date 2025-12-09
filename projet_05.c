@@ -227,7 +227,7 @@ int main() {
             case 2:
                 break;
             case 3: {
-                supression(1, (const char *[]){"tp5_base_de_donné.txt"});
+                suppression(1, (const char *[]){"tp5_base_de_donné.txt"});
                 break;
             }
             case 4: {
