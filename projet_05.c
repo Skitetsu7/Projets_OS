@@ -78,7 +78,7 @@ int main() {
                 char email[50];
                 char phonenumber[20];
                 char status[10];
-                add();
+                add(argc,argv);
                 break;
             }
             case 0:
