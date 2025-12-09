@@ -191,44 +191,62 @@ int add(int argc,char const *argv[])
     return 0;
 }
 
-int check_word(char buff[], int s_buff, char word[], int s_word) {
-  int i = 0;
-  while (i < s_word) {
-    if (buff[i] != word[i]) {
-      return 0;
-    }
-    i++;
-  }
-  return 1;
+void reset_buffer(char *buffer, int size) {
+  for (int i = 0; i < size; i++)
+    buffer[i] = 0;
 }
 
-int word_in_line(char line[], int line_i, char word[], int word_i) {
-  int i = 0;
-  int j = 0;
-  char current[256];
-  while (i < line_i) {
-    if (j == 0) {
+int search(int file, char *word) {
+  // init var
+  char buff[1024];
+  char line[1024];
 
-      while (j < sizeof(current)) {
-        current[j] = 0;
-        j++;
+  int i = 0;
+  int k = 0;
+  int somewhere = 0;
+  long int bytes = 0;
+
+  bytes = read(file, buff, sizeof(buff));
+
+  printf("file size : %ld\n", bytes);
+
+  while (i < bytes) {
+    // fill line
+    line[k] = buff[i];
+    // end a line
+    if (line[k] == '\n') {
+      // end line with '\0'
+      line[k] = 0;
+      // look for word
+      if (strstr(line, word)) {
+        printf("%s", line);
+        somewhere++;
       }
-      j = 0;
+      // reset line
+      reset_buffer(line, sizeof(line));
+      k = -1;
     }
-    current[j] = line[i];
-
-    if (current[j] == ' ' || current[j] == '\0') {
-      current[j] = '\0';
-      j = -1;
-    }
-    if (j == -1 && check_word(current, sizeof(current), word, word_i)) {
-      printf("line :\n %s \n", line);
-    }
-    j++;
+    k++;
     i++;
   }
-  return 0;
+  if (somewhere == 0)
+    printf("Nothing mention %s\n", word);
+
+  return EXIT_SUCCESS;
 }
+
+int init_search(char *file_path) {
+  // init
+  char word[1024];
+  // ask useer
+  printf("Research :\v");
+  scanf("%s", word);
+  int file = open(path, O_RDONLY);
+  if (file == -1) {
+    printf("ERROR : Opening file failed;\n");
+    return EXIT_FAILURE;
+  }
+
 
 int main() {
     int choice;
@@ -248,6 +266,7 @@ int main() {
                 print_BD(open("tp5_base_de_donné.txt", O_RDONLY));
                 break;
             case 2:
+                init_search("tp5_base_de_donné.txt");
                 break;
             case 3: {
                 suppression(1, (const char *[]){"tp5_base_de_donné.txt"});
