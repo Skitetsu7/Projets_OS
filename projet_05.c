@@ -1,10 +1,9 @@
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <fcntl.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <string.h>
-
+#include <stdbool.h>
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
@@ -52,19 +51,76 @@ void print_BD(int file){
 
 
 
-int add(int argc,char const *argv[])
-{
-    
-    int file = open(argv[1], O_WRONLY | O_APPEND);
+
+int delete(int argc,char const *argv[]){
+    char email[50];
+    char buffer[BUFFER_SIZE];
+    bool found = false;
+    int file = open(argv[0], O_RDONLY), right=0;
     if (file == -1) {
         perror("Erreur d'ouverture du fichier");
         return -1;
     }
-    char name[20];
+    int bytes_read = read(file,buffer,BUFFER_SIZE);
+    if (bytes_read < 0) {
+        perror("read");
+        close(file);
+        return EXIT_FAILURE;
+    }
+    close(file);
+    printf("Donne l'adresse mail: \n");
+    scanf("%s", email);
+    for(int j=0; j<bytes_read; j++){
+        if(j==0 || buffer[j-1]=='\n'){//arrête le tableau à la 1ère ligne
+            found=false;
+            right =0;
+        }
+        // chercher lignes
+        if(found==false){
+            if(buffer[j]==email[right]){
+                right++;
+                if(right==strlen(email)){
+                    found=true;
+                }
+            }
+            else{
+                right=0;
+            }
+        }
+
+        // supprimer ligne
+        if(found==true){
+            if(buffer[j]=='\n'){
+                found=false;
+            }
+            else{
+                buffer[j] = ' '; //ecraser la valeur courante par la suivante
+            }
+        }
+        }
+    file = open(argv[0], O_WRONLY | O_TRUNC); // nessecaire d'écrire dans le fichier pour supprimer
+    if (file == -1) {
+        perror("write");
+        return -1;
+    }
+    write(file,buffer,bytes_read);
+    close(file);
+    return 0;
+    }
+
+
+int add(int argc,char const *argv[])
+{   char name[20];
     char firstname[20];
     char email[50];
     char phonenumber[20];
     char status[10];
+    
+    int file = open(argv[0], O_WRONLY | O_APPEND);
+    if (file == -1) {
+        perror("Erreur d'ouverture du fichier");
+        return -1;
+    }
 
     
 
@@ -115,20 +171,20 @@ int main() {
         printf("4. Add \n");
         printf("0. Leave \n");
         printf("Your choice  : ");
-        scanf("%d", &choix);
+        scanf("%d", &choice);
 
         switch (choice) {
             case 1:
+                print_BD(open("tp5_base_de_donné.txt", O_RDONLY));
                 break;
             case 2:
                 break;
             case 3: {
+                delete(1, (const char *[]){"tp5_base_de_donné.txt"});
                 break;
             }
-
             case 4: {
-                
-                add(argc,argv);
+                add(1, (const char *[]){"tp5_base_de_donné.txt"});
                 break;
             }
             case 0:
