@@ -27,8 +27,9 @@ void print_BD(int file){
             if (strstr(line, "inactif")){  //if inactif member
                 strcpy(inactif_member[inactif_count], line);  //copy the line in inactif member
                 inactif_count++;  //increasse the number of inactif
+
             }
-            else (strstr(line, "actif")){  //if actif member
+            else {  //if actif member
                 strcpy(actif_member[actif_count], line);  //copy the line in actif member
                 actif_count++;   //increase the number of actif
             }
@@ -43,8 +44,10 @@ void print_BD(int file){
     printf("==============actif member=============\n");   //print actif member
     for(int i = 0; i< actif_count; i++){
         printf("%s\n", actif_member[i]);
+
     }
-    printf("==============inactif member=============\n");  //print inactif member
+    
+    printf("\n ==============inactif member=============\n");  //print inactif member
     for(int i = 0; i<inactif_count; i++){
         printf("%s\n", inactif_member[i]);
     }
