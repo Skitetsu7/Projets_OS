@@ -15,7 +15,6 @@ void print_BD(int file){
     char actif_member[BUFFER_ACTIF_MEMBER][BUFFER_SIZE];
     char inactif_member[BUFFER_INACTIF_MEMBER][BUFFER_SIZE];
     unsigned int index = 0;
-    unsigned int line_number = 1;
     unsigned int actif_count = 0;
     unsigned int inactif_count = 0;
     char ch ;
@@ -40,6 +39,18 @@ void print_BD(int file){
             line[index] = ch; //add the char in line
             index++;
         }
+    }
+    if (index > 0){
+        line [ index ] = '\0';  //string end
+        if (strstr(line, "inactif")){  //if inactif member
+                strcpy(inactif_member[inactif_count], line);  //copy the line in inactif member
+                inactif_count++;  //increasse the number of inactif
+
+            }
+            else {  //if actif member
+                strcpy(actif_member[actif_count], line);  //copy the line in actif member
+                actif_count++;   //increase the number of actif
+            }
     }
     printf("==============actif member=============\n");   //print actif member
     for(int i = 0; i< actif_count; i++){
