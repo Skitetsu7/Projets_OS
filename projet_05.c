@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -172,8 +173,19 @@ int add(int argc,char const *argv[])
 
     printf(" Please, write your status (actif or inactif) : ");
     scanf("%s", status);
+    while(1){
+        if (strcmp(status,"actif")==0 || strcmp(status, "inactif")==0){
+            break;
+
+        }
+        else{
+            printf("Please give a value between (actif or inactif) : ");
+            scanf("%s", status);
+        }
+
+    }
     for (int i = 0; status[i] != '\0'; i++)
-        write(file, &status[i], 1);
+    write(file, &status[i], 1);
     
     close(file);
     return 0;
