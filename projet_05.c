@@ -193,6 +193,7 @@ int search(int file, char *word) {
   // init var
   char buff[1024];
   char line[1024];
+  char *search = strstr(word, "@");
 
   int i = 0;
   int k = 0;
@@ -211,7 +212,7 @@ int search(int file, char *word) {
       // end line with '\0'
       line[k] = 0;
       // look for word
-      if (strstr(line, word)) {
+      if (strstr(line, word) && search != NULL) {
         printf("%s\n", line);
         somewhere++;
       }
@@ -232,7 +233,7 @@ int init_search(const char file_path[]) {
   // init
   char word[1024];
   // ask useer
-  printf("Research :\n");
+  printf("Research email :\n");
   scanf("%s", word);
   int file = open(file_path, O_RDONLY);
   if (file == -1) {
