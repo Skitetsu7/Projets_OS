@@ -169,23 +169,23 @@ int add(const char file_path[]) {
 
   write(file, "\n", 1); // to go on the next line
 
-  printf(" Please, write your name : ");
+  printf("Please, write your name : ");
   scanf("%s", name);
   write(file, name, strlen(name));
   write(file, " ", 1); // to separe by a space in the file
 
-  printf(" Please, write your firstname : ");
+  printf("Please, write your firstname : ");
   scanf("%s", firstname);
   write(file, firstname, strlen(firstname));
   write(file, " ", 1);
 
-  printf(" Please, write your phone number : ");
+  printf("Please, write your phone number : ");
   scanf("%s", phonenumber);
   write(file, phonenumber, strlen(phonenumber));
   write(file, " ", 1);
 
 
-  printf(" Please, write your email who don't already exist : ");
+  printf("Please, write your email who don't already exist : ");
   scanf("%s", email);
   int file_read = open(file_path, O_RDONLY);
   if (file_read == -1) {
@@ -214,7 +214,7 @@ int add(const char file_path[]) {
   write(file, " ", 1);
 
 
-  printf(" Please, write your status (actif or inactif) : ");
+  printf("Please, write your status (actif or inactif) : ");
   scanf("%s", status);
   while (1) {
     if (strcmp(status, "actif") == 0 || strcmp(status, "inactif") == 0) {
