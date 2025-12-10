@@ -178,14 +178,14 @@ int add(const char file_path[]) {
   write(file, firstname, strlen(firstname));
   write(file, " ", 1);
 
-  printf(" Please, write your email : ");
-  scanf("%s", email);
-  write(file, email, strlen(email));
-  write(file, " ", 1);
-
   printf(" Please, write your phone number : ");
   scanf("%s", phonenumber);
   write(file, phonenumber, strlen(phonenumber));
+  write(file, " ", 1);
+
+  printf(" Please, write your email : ");
+  scanf("%s", email);
+  write(file, email, strlen(email));
   write(file, " ", 1);
 
   printf(" Please, write your status (actif or inactif) : ");
