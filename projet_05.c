@@ -141,22 +141,22 @@ int add(int argc, char const *argv[]) {
 
   printf(" Please, write your name : ");
   scanf("%s", name);
-  write(file, name, strlen(name);
+  write(file, name, strlen(name));
   write(file, " ", 1); // to separe by a space in the file
 
   printf(" Please, write your firstname : ");
   scanf("%s", firstname);
-  write(file, firstname, strlen(firstname);
+  write(file, firstname, strlen(firstname));
   write(file, " ", 1);
 
   printf(" Please, write your email : ");
   scanf("%s", email);
-  write(file, email, strlen(email);
+  write(file, email, strlen(email));
   write(file, " ", 1);
 
   printf(" Please, write your phone number : ");
   scanf("%s", phonenumber);
-  write(file, phonenumber, strlen(phonenumber);
+  write(file, phonenumber, strlen(phonenumber));
   write(file, " ", 1);
 
   printf(" Please, write your status (actif or inactif) : ");
