@@ -81,14 +81,14 @@ int suppression(const char file_path[]) {
   close(file);
   printf("Donne l'adresse mail: \n");
   scanf("%s", email);     
-  char *chearch = strstr(email, "@");
+  char *search = strstr(email, "@");
   for (int j = 0; j <= bytes_read; j++) { // loop on the file
     if (j == bytes_read || buffer[j] == '\n') { // stop each buffer by a line (j==bytes_real because at end we don't have \n)
             int line_start = j;    // start by the end of each line
             found = false;
             // search line of the email on the buffer
             for (int i = line_end; i < line_start; i++) {
-                if(buffer[i]==email[0] && chearch!=NULL){  //check that the first character is correct and that @ is in the word
+                if(buffer[i]==email[0] && search!=NULL){  //check that the first character is correct and that @ is in the word
                     right = 0;
                     while (1) {
                         if (email[right] != buffer[i + right]) { //checks that the rest of the characters are the same
