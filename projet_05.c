@@ -212,60 +212,98 @@ void reset_buffer(char *buffer, int size) {
     buffer[i] = 0;
 }
 
-int search(int file, char *word) {
-  // init var
-  char buff[1024];
-  char line[1024];
-  char *search = strstr(word, "@");
+int len_str(char *buff) {
+  int len = 0;
+  while (buff[len] != 0) {
+    len++;
+  }
+  return len;
+}
 
+int search_str(char *word, char *sentence, char separator, char line_end) {
   int i = 0;
-  int k = 0;
-  int somewhere = 0;
-  long int bytes = 0;
+  int j = 0;
+  int state[3];
+  int occurrence = 0;
+  while (i < len_str(sentence) - 1) {
+    if (sentence[i] == word[j]) {
+      j++;
+      if (j == len_str(word)) {
+        state[0] = !(j - i - 1); // start
+        state[1] = sentence[i + 1] == line_end ||
+                   sentence[i + 1] == separator; // end or separator after
+        state[2] = sentence[i - j] == separator; // separator before
 
-  bytes = read(file, buff, sizeof(buff));
-
-  printf("file size : %ld\n", bytes);
-
-  while (i < bytes) {
-    // fill line
-    line[k] = buff[i];
-    // end a line
-    if (line[k] == '\n') {
-      // end line with '\0'
-      line[k] = 0;
-      // look for word
-      if (strstr(line, word) && search != NULL) {
-        printf("%s\n", line);
-        somewhere++;
+        if (state[0] && state[1]) { // word is on the start
+          occurrence++;
+          printf("%s", sentence);
+        }
+        if (state[2] && state[1]) { // word is on the end or somewhere else
+          occurrence++;
+          printf("%s", sentence);
+        }
+        // reset checker
+        state[0] = 0;
+        state[1] = 0;
+        state[2] = 0;
       }
-      // reset line
-      reset_buffer(line, sizeof(line));
-      k = -1;
+    } else {
+      j = 0;
     }
-    k++;
     i++;
   }
-  if (somewhere == 0)
-    printf("Nothing mention %s\n", word);
+  return occurrence;
+}
 
-  return EXIT_SUCCESS;
+int take_input(char *usrin, char asked) {
+  for (int i = 0; i < len_str(usrin); i++) {
+    if (usrin[i] == asked) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 int init_search(const char file_path[]) {
   // init
-  char word[1024];
+  char word[256];
+  char line[1024];
+  char buff[1024];
+  int i = 0;
+  int j = 0;
+  int occurrence = 0;
   // ask useer
   printf("Research email :\n");
-  scanf("%s", word);
+  reset_buffer(word, 256);
+
+  // wait for a decent input
+  while (!take_input(word, '@') && len_str(word) < 256) {
+    printf("please enter an email (or @ to cancel):");
+    scanf("%s", word);
+  }
+
   int file = open(file_path, O_RDONLY);
   if (file == -1) {
     printf("ERROR : Opening file failed;\n");
     return EXIT_FAILURE;
   }
-  search(file, word);
+  int bytes = read(file, buff, sizeof(line));
+
+  while (i < bytes) {
+    line[j] = buff[i];
+    if (line[j] == '\n') {
+      occurrence += search_str(word, line, ' ', ';');
+      reset_buffer(line, len_str(line));
+      j = -1;
+    }
+    j++;
+    i++;
+  }
+  // printf("occurence :%d\n", occurrence);
+  close(file);
   return EXIT_SUCCESS;
 }
+
 
 int main() {
   int choice;
