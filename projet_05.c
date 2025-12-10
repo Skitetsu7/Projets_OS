@@ -80,58 +80,64 @@ int suppression(const char file_path[]) {
   }
   close(file);
   printf("Donne l'adresse mail: \n");
-  scanf("%s", email);
+  scanf("%s", email);     
+  char *chearch = strstr(email, "@");
   for (int j = 0; j <= bytes_read; j++) { // loop on the file
-    if (j == bytes_read ||
-        buffer[j] == '\n') { // stop each buffer by a line (j==bytes_read
-                             // because at end we don't have \n)
-      int line_start = j;    // start by the end of each line
-      found = false;
-      // search line of the email on the buffer
-      for (int i = line_end; i < line_start; i++) {
-        right = 0;
-        while (1) {
-          if (email[right] != buffer[i + right]) {
-            break;
-          }
-          right++;
+    if (j == bytes_read || buffer[j] == '\n') { // stop each buffer by a line (j==bytes_real because at end we don't have \n)
+            int line_start = j;    // start by the end of each line
+            found = false;
+            // search line of the email on the buffer
+            for (int i = line_end; i < line_start; i++) {
+                if(buffer[i]==email[0] && chearch!=NULL){  //check that the first character is correct and that @ is in the word
+                    right = 0;
+                    while (1) {
+                        if (email[right] != buffer[i + right]) { //checks that the rest of the characters are the same
+                            break;
+                            }
+                        right++; // advance in the buffer and email too
+                        }
+                    if (email[right] == '\0') {
+                        char end_email = buffer[i + right];
+                        if(end_email == ' ' || end_email == '\n'){ //check that the entire email is written before deleting it
+                            found = true; // if the email is find return found
+                            break;
+                            }
+                        }
+                    }
+            }
+
+            if (found == true) {
+                int len = line_start-line_end; // the end minus the bigging to know the lenght
+                for (int k = line_end; k + len < bytes_read; k++) {
+                    int norme = k + len + 1;
+                    buffer[k] = buffer[norme]; // necessary to erase the space
+                    }
+                    bytes_read -= len + 1; // update
+                    j = line_end - 1; // go back to the bigging of the line
+                } 
+            else {
+                line_end = j + 1; //update 2.0
+            }
         }
-        if (email[right] == '\0') {
-          found = true; // if the email is find
-          break;
-        }
-      }
-      if (found == true) {
-        int len = line_start -
-                  line_end; // the end minus the bigging to know the lenght
-        for (int k = line_end; k + len < bytes_read; k++) {
-          int norme = k + len + 1;
-          buffer[k] = buffer[norme]; // necessary to erase the space
-        }
-        bytes_read -= len + 1; // more forward
-        j = line_end - 1;
-      }
-      line_end = j + 1;
     }
-  }
-  file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
-  if (file == -1) {
-    perror("write");
-    return -1;
-  }
-  write(file, buffer, bytes_read);
-  close(file);
-  return 0;
+    file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
+    if (file == -1) {
+        perror("write");
+        return -1;
+    }
+    write(file, buffer, bytes_read);
+    close(file);
+    return 0;
 }
 
-int add(int argc, char const *argv[]) {
+int add(const char file_path[]) {
   char name[20];
   char firstname[20];
   char email[50];
   char phonenumber[20];
   char status[10];
 
-  int file = open(argv[0], O_WRONLY | O_APPEND);
+  int file = open(file_path, O_WRONLY | O_APPEND);
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
     return -1;
@@ -176,6 +182,7 @@ int add(int argc, char const *argv[]) {
   close(file);
   return 0;
 }
+
 
 void reset_buffer(char *buffer, int size) {
   for (int i = 0; i < size; i++)
@@ -225,7 +232,7 @@ int init_search(const char file_path[]) {
   // init
   char word[1024];
   // ask useer
-  printf("Research :\v");
+  printf("Research :\n");
   scanf("%s", word);
   int file = open(file_path, O_RDONLY);
   if (file == -1) {
@@ -248,7 +255,6 @@ int main() {
     printf("Your choice : ");
     scanf("%d", &choice);
     printf("\n");
-
     switch (choice) {
     case 1:
       print_BD(open(path, O_RDONLY));
@@ -261,7 +267,7 @@ int main() {
       break;
     }
     case 4: {
-      add(1, (const char *[]){path});
+      add(path);
       break;
     }
     case 0:
