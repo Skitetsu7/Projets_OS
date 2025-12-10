@@ -102,7 +102,7 @@ int suppression(const char file_path[]) {
     return EXIT_FAILURE;
   }
   close(file);
-  printf("Donne l'adresse mail: \n");
+  printf("provides a (full) email address to delete: ");
   scanf("%s", email);     
   char *search = strstr(email, "@");
   for (int j = 0; j <= bytes_read; j++) { // loop on the file
