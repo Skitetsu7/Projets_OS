@@ -7,7 +7,7 @@
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
-const char path[] = "/Users/sacha_ismailov/Downloads/tp5_base_de_donné.txt";
+const char path[] = "tp5_base_de_donné.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
    */
@@ -63,11 +63,11 @@ void print_BD(int file) {
   }
 }
 
-int suppression(int argc, char const *argv[]) {
+int suppression(const char file_path[]) {
   char email[50];
   char buffer[BUFFER_SIZE];
   bool found = false;
-  int file = open(argv[0], O_RDONLY), line_end = 0, right = 0;
+  int file = open(file_path, O_RDONLY), line_end = 0, right = 0;
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
     return -1;
@@ -114,8 +114,7 @@ int suppression(int argc, char const *argv[]) {
       line_end = j + 1;
     }
   }
-  file = open(argv[0],
-              O_WRONLY | O_TRUNC); // necessary to write to the file to delete
+  file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
   if (file == -1) {
     perror("write");
     return -1;
@@ -262,7 +261,7 @@ int main() {
       init_search(path);
       break;
     case 3: {
-      suppression(1, (const char *[]){path});
+      suppression(path);
       break;
     }
     case 4: {
