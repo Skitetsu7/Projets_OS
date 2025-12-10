@@ -185,6 +185,10 @@ int add(const char file_path[]) {
 
   printf(" Please, write your email : ");
   scanf("%s", email);
+  while (strchr(email, '@') == NULL || email[0] == '\0' || email[strlen(email)-1] == '@') {
+    printf("Please give a email with an '@' and one character before and after the '@' : ");
+    scanf("%s", email);
+    }
   write(file, email, strlen(email));
   write(file, " ", 1);
 
