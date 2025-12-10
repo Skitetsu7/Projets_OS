@@ -93,7 +93,7 @@ int suppression(const char file_path[]) {
   int file = open(file_path, O_RDONLY), line_end = 0, right = 0;
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
-    return -1;
+    return EXIT_FAILURE;
   }
   int bytes_read = read(file, buffer, BUFFER_SIZE);
   if (bytes_read < 0) {
@@ -146,7 +146,7 @@ int suppression(const char file_path[]) {
     file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
     if (file == -1) {
         perror("write");
-        return -1;
+        return EXIT_FAILURE;
     }
     write(file, buffer, bytes_read);
     close(file);
@@ -154,12 +154,13 @@ int suppression(const char file_path[]) {
 }
 
 int add(const char file_path[]) {
+  char buffer[BUFFER_SIZE];
   char name[20];
   char firstname[20];
   char email[50];
   char phonenumber[20];
   char status[10];
-
+  
   int file = open(file_path, O_WRONLY | O_APPEND);
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
@@ -183,14 +184,35 @@ int add(const char file_path[]) {
   write(file, phonenumber, strlen(phonenumber));
   write(file, " ", 1);
 
-  printf(" Please, write your email : ");
+
+  printf(" Please, write your email who don't already exist : ");
   scanf("%s", email);
-  while (strchr(email, '@') == NULL || email[0] == '\0' || email[strlen(email)-1] == '@') {
-    printf("Please give a email with an '@' and one character before and after the '@' : ");
-    scanf("%s", email);
+  int file_read = open(file_path, O_RDONLY);
+  if (file_read == -1) {
+        perror("Erreur d'ouverture du fichier");
+        return EXIT_FAILURE;
+    }
+    int bytes_read = read(file_read, buffer, BUFFER_SIZE);
+  if (bytes_read < 0) {
+        perror("read");
+        close(file_read);
+        return EXIT_FAILURE;
+    }
+    buffer[bytes_read] = '\0'; // close the buffer
+    close(file_read);
+  while (strstr(buffer, email) != NULL || strchr(email, '@') == NULL || email[0] == '@' || email[strlen(email)-1] == '@') {
+    if(strstr(buffer, email)){
+        printf("this email already exist, give another one : ");
+        scanf("%s", email);
+    }
+    else{
+        printf("Please give a email with an '@' and one character before and after the '@' : ");
+        scanf("%s", email);
+    }
     }
   write(file, email, strlen(email));
   write(file, " ", 1);
+
 
   printf(" Please, write your status (actif or inactif) : ");
   scanf("%s", status);
