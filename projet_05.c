@@ -14,41 +14,55 @@ void print_BD(int file) {
   char line[BUFFER_SIZE]; // all initialization
   char actif_member[BUFFER_ACTIF_MEMBER][BUFFER_SIZE];
   char inactif_member[BUFFER_INACTIF_MEMBER][BUFFER_SIZE];
+  char no_statut_member[BUFFER_INACTIF_MEMBER][BUFFER_SIZE];
   unsigned int index = 0;
   unsigned int actif_count = 0;
   unsigned int inactif_count = 0;
+  unsigned int no_statut_count = 0;
   char ch;
-
   while (read(file, &ch, 1) != 0) {  // read the file char by char
     if (ch == '\n') {                // line end
       line[index] = '\0';            // string end
-      if (strstr(line, "inactif")) { // if inactif member
-        strcpy(inactif_member[inactif_count],
-               line);    // copy the line in inactif member
-        inactif_count++; // increasse the number of inactif
+      if(strstr(line, "actif") != NULL){
+        if (strstr(line, "inactif")) { // if inactif member
+            strcpy(inactif_member[inactif_count],line);    // copy the line in inactif member
+            inactif_count++; // increasse the number of inactif
 
-      } else {                                   // if actif member
-        strcpy(actif_member[actif_count], line); // copy the line in actif
-                                                 // member
-        actif_count++;                           // increase the number of actif
+        } 
+        else {                                   // if actif member
+            strcpy(actif_member[actif_count], line); // copy the line in actif
+                                                    // member
+            actif_count++;                           // increase the number of actif
+        }
       }
-
+    else{
+        strcpy(no_statut_member[no_statut_count], line); // copy the line in no statut member
+            no_statut_count++;                                            
+    }
       index = 0; // reser index for the next line
-    } else {
+    } 
+    else {
       line[index] = ch; // add the char in line
       index++;
     }
   }
   if (index > 0) {
     line[index] = '\0';            // string end
-    if (strstr(line, "inactif")) { // if inactif member
-      strcpy(inactif_member[inactif_count],
-             line);    // copy the line in inactif member
-      inactif_count++; // increasse the number of inactif
+    if(strstr(line, "actif") != NULL){
+        if (strstr(line, "inactif")) { // if inactif member
+            strcpy(inactif_member[inactif_count],line);    // copy the line in inactif member
+            inactif_count++; // increasse the number of inactif
 
-    } else {                                   // if actif member
-      strcpy(actif_member[actif_count], line); // copy the line in actif member
-      actif_count++;                           // increase the number of actif
+        } 
+        else {                                   // if actif member
+            strcpy(actif_member[actif_count], line); // copy the line in actif
+                                                    // member
+            actif_count++;                           // increase the number of actif
+        }
+      }
+    else{
+        strcpy(no_statut_member[no_statut_count], line); // copy the line in no statut member
+            no_statut_count++;                                            
     }
   }
   printf("==============actif member=============\n"); // print actif member
@@ -56,12 +70,21 @@ void print_BD(int file) {
     printf("%s\n", actif_member[i]);
   }
 
-  printf(
-      "\n ==============inactif member=============\n"); // print inactif member
+  printf("\n ==============inactif member=============\n"); // print inactif member
   for (int i = 0; i < inactif_count; i++) {
     printf("%s\n", inactif_member[i]);
   }
+  
+  if (no_statut_count>0) {
+    printf("\n ==============no statut member=============\n");
+    for (int i = 0; i < no_statut_count; i++) {
+        if (strlen(no_statut_member[i])>0){
+            printf("%s\n", no_statut_member[i]);
+          }
+      }
+  }
 }
+
 
 int suppression(const char file_path[]) {
   char email[50];
