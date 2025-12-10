@@ -256,6 +256,9 @@ int main() {
     scanf("%d", &choice);
     printf("\n");
     switch (choice) {
+    case 0:
+      printf("This is the end\n");
+      return 0;
     case 1:
       print_BD(open(path, O_RDONLY));
       break;
@@ -270,9 +273,6 @@ int main() {
       add(path);
       break;
     }
-    case 0:
-      printf("This is the end\n");
-      return 0;
     default:
       printf("Invalid choice .\n");
       break;
