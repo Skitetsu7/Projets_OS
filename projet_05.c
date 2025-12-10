@@ -170,8 +170,8 @@ int add(int argc, char const *argv[]) {
       scanf("%s", status);
     }
   }
-  for (int i = 0; status[i] != '\0'; i++)
-    write(file, &status[i], 1);
+ 
+  write(file, status, strlen(status));
 
   close(file);
   return 0;
