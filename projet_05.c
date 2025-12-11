@@ -7,7 +7,7 @@
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
-const char path[] = "/Users/sacha_ismailov/Downloads/tp5_base_de_donné.txt";
+const char path[] = "tp5_base_de_donné.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
    */
@@ -20,48 +20,49 @@ void print_BD(int file) {
   unsigned int inactif_count = 0;
   unsigned int no_statut_count = 0;
   char ch;
-  while (read(file, &ch, 1) != 0) { // read the file char by char
-    if (ch == '\n') {               // line end
-      line[index] = '\0';           // string end
-      if (strstr(line, "actif") != NULL) {
+  while (read(file, &ch, 1) != 0) {  // read the file char by char
+    if (ch == '\n') {                // line end
+      line[index] = '\0';            // string end
+      if(strstr(line, "actif") != NULL){
         if (strstr(line, "inactif")) { // if inactif member
-          strcpy(inactif_member[inactif_count],
-                 line);    // copy the line in inactif member
-          inactif_count++; // increasse the number of inactif
+            strcpy(inactif_member[inactif_count],line);    // copy the line in inactif member
+            inactif_count++; // increasse the number of inactif
 
-        } else {                                   // if actif member
-          strcpy(actif_member[actif_count], line); // copy the line in actif
-                                                   // member
-          actif_count++; // increase the number of actif
+        } 
+        else {                                   // if actif member
+            strcpy(actif_member[actif_count], line); // copy the line in actif
+                                                    // member
+            actif_count++;                           // increase the number of actif
         }
-      } else {
-        strcpy(no_statut_member[no_statut_count],
-               line); // copy the line in no statut member
-        no_statut_count++;
       }
+    else{
+        strcpy(no_statut_member[no_statut_count], line); // copy the line in no statut member
+            no_statut_count++;                                            
+    }
       index = 0; // reser index for the next line
-    } else {
+    } 
+    else {
       line[index] = ch; // add the char in line
       index++;
     }
   }
   if (index > 0) {
-    line[index] = '\0'; // string end
-    if (strstr(line, "actif") != NULL) {
-      if (strstr(line, "inactif")) { // if inactif member
-        strcpy(inactif_member[inactif_count],
-               line);    // copy the line in inactif member
-        inactif_count++; // increasse the number of inactif
+    line[index] = '\0';            // string end
+    if(strstr(line, "actif") != NULL){
+        if (strstr(line, "inactif")) { // if inactif member
+            strcpy(inactif_member[inactif_count],line);    // copy the line in inactif member
+            inactif_count++; // increasse the number of inactif
 
-      } else {                                   // if actif member
-        strcpy(actif_member[actif_count], line); // copy the line in actif
-                                                 // member
-        actif_count++;                           // increase the number of actif
+        } 
+        else {                                   // if actif member
+            strcpy(actif_member[actif_count], line); // copy the line in actif
+                                                    // member
+            actif_count++;                           // increase the number of actif
+        }
       }
-    } else {
-      strcpy(no_statut_member[no_statut_count],
-             line); // copy the line in no statut member
-      no_statut_count++;
+    else{
+        strcpy(no_statut_member[no_statut_count], line); // copy the line in no statut member
+            no_statut_count++;                                            
     }
   }
   printf("==============actif member=============\n"); // print actif member
@@ -69,21 +70,21 @@ void print_BD(int file) {
     printf("%s\n", actif_member[i]);
   }
 
-  printf(
-      "\n ==============inactif member=============\n"); // print inactif member
+  printf("\n ==============inactif member=============\n"); // print inactif member
   for (int i = 0; i < inactif_count; i++) {
     printf("%s\n", inactif_member[i]);
   }
-
-  if (no_statut_count > 0) {
+  
+  if (no_statut_count>0) {
     printf("\n ==============no statut member=============\n");
     for (int i = 0; i < no_statut_count; i++) {
-      if (strlen(no_statut_member[i]) > 0) {
-        printf("%s\n", no_statut_member[i]);
+        if (strlen(no_statut_member[i])>0){
+            printf("%s\n", no_statut_member[i]);
+          }
       }
-    }
   }
 }
+
 
 int suppression(const char file_path[]) {
   char email[50];
@@ -92,7 +93,7 @@ int suppression(const char file_path[]) {
   int file = open(file_path, O_RDONLY), line_end = 0, right = 0;
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
-    return -1;
+    return EXIT_FAILURE;
   }
   int bytes_read = read(file, buffer, BUFFER_SIZE);
   if (bytes_read < 0) {
@@ -101,73 +102,65 @@ int suppression(const char file_path[]) {
     return EXIT_FAILURE;
   }
   close(file);
-  printf("Donne l'adresse mail: \n");
-  scanf("%s", email);
+  printf("provides a (full) email address to delete: ");
+  scanf("%s", email);     
   char *search = strstr(email, "@");
   for (int j = 0; j <= bytes_read; j++) { // loop on the file
-    if (j == bytes_read ||
-        buffer[j] == '\n') { // stop each buffer by a line (j==bytes_real
-                             // because at end we don't have \n)
-      int line_start = j;    // start by the end of each line
-      found = false;
-      // search line of the email on the buffer
-      for (int i = line_end; i < line_start; i++) {
-        if (buffer[i] == email[0] &&
-            search != NULL) { // check that the first character is correct and
-                              // that @ is in the word
-          right = 0;
-          while (1) {
-            if (email[right] !=
-                buffer[i + right]) { // checks that the rest of the characters
-                                     // are the same
-              break;
+    if (j == bytes_read || buffer[j] == '\n') { // stop each buffer by a line (j==bytes_real because at end we don't have \n)
+            int line_start = j;    // start by the end of each line
+            found = false;
+            // search line of the email on the buffer
+            for (int i = line_end; i < line_start; i++) {
+                if(buffer[i]==email[0] && search!=NULL){  //check that the first character is correct and that @ is in the word
+                    right = 0;
+                    while (1) {
+                        if (email[right] != buffer[i + right]) { //checks that the rest of the characters are the same
+                            break;
+                            }
+                        right++; // advance in the buffer and email too
+                        }
+                    if (email[right] == '\0') {
+                        char end_email = buffer[i + right];
+                        if(end_email == ' ' || end_email == '\n'){ //check that the entire email is written before deleting it
+                            found = true; // if the email is find return found
+                            break;
+                            }
+                        }
+                    }
             }
-            right++; // advance in the buffer and email too
-          }
-          if (email[right] == '\0') {
-            char end_email = buffer[i + right];
-            if (end_email == ' ' ||
-                end_email == '\n') { // check that the entire email is written
-                                     // before deleting it
-              found = true;          // if the email is find return found
-              break;
-            }
-          }
-        }
-      }
 
-      if (found == true) {
-        int len = line_start -
-                  line_end; // the end minus the bigging to know the lenght
-        for (int k = line_end; k + len < bytes_read; k++) {
-          int norme = k + len + 1;
-          buffer[k] = buffer[norme]; // necessary to erase the space
+            if (found == true) {
+                int len = line_start-line_end; // the end minus the bigging to know the lenght
+                for (int k = line_end; k + len < bytes_read; k++) {
+                    int norme = k + len + 1;
+                    buffer[k] = buffer[norme]; // necessary to erase the space
+                    }
+                    bytes_read -= len + 1; // update
+                    j = line_end - 1; // go back to the bigging of the line
+                } 
+            else {
+                line_end = j + 1; //update 2.0
+            }
         }
-        bytes_read -= len + 1; // update
-        j = line_end - 1;      // go back to the bigging of the line
-      } else {
-        line_end = j + 1; // update 2.0
-      }
     }
-  }
-  file = open(file_path,
-              O_WRONLY | O_TRUNC); // necessary to write to the file to delete
-  if (file == -1) {
-    perror("write");
-    return -1;
-  }
-  write(file, buffer, bytes_read);
-  close(file);
-  return 0;
+    file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
+    if (file == -1) {
+        perror("write");
+        return EXIT_FAILURE;
+    }
+    write(file, buffer, bytes_read);
+    close(file);
+    return 0;
 }
 
 int add(const char file_path[]) {
+  char buffer[BUFFER_SIZE];
   char name[20];
   char firstname[20];
   char email[50];
   char phonenumber[20];
   char status[10];
-
+  
   int file = open(file_path, O_WRONLY | O_APPEND);
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
@@ -176,27 +169,52 @@ int add(const char file_path[]) {
 
   write(file, "\n", 1); // to go on the next line
 
-  printf(" Please, write your name : ");
+  printf("Please, write your name : ");
   scanf("%s", name);
   write(file, name, strlen(name));
   write(file, " ", 1); // to separe by a space in the file
 
-  printf(" Please, write your firstname : ");
+  printf("Please, write your firstname : ");
   scanf("%s", firstname);
   write(file, firstname, strlen(firstname));
   write(file, " ", 1);
 
-  printf(" Please, write your email : ");
-  scanf("%s", email);
-  write(file, email, strlen(email));
-  write(file, " ", 1);
-
-  printf(" Please, write your phone number : ");
+  printf("Please, write your phone number : ");
   scanf("%s", phonenumber);
   write(file, phonenumber, strlen(phonenumber));
   write(file, " ", 1);
 
-  printf(" Please, write your status (actif or inactif) : ");
+
+  printf("Please, write your email who don't already exist : ");
+  scanf("%s", email);
+  int file_read = open(file_path, O_RDONLY);
+  if (file_read == -1) {
+        perror("Erreur d'ouverture du fichier");
+        return EXIT_FAILURE;
+    }
+    int bytes_read = read(file_read, buffer, BUFFER_SIZE);
+  if (bytes_read < 0) {
+        perror("read");
+        close(file_read);
+        return EXIT_FAILURE;
+    }
+    buffer[bytes_read] = '\0'; // close the buffer
+    close(file_read);
+  while (strstr(buffer, email) != NULL || strchr(email, '@') == NULL || email[0] == '@' || email[strlen(email)-1] == '@') {
+    if(strstr(buffer, email)){
+        printf("this email already exist, give another one : ");
+        scanf("%s", email);
+    }
+    else{
+        printf("Please give a email with an '@' and one character before and after the '@' : ");
+        scanf("%s", email);
+    }
+    }
+  write(file, email, strlen(email));
+  write(file, " ", 1);
+
+
+  printf("Please, write your status (actif or inactif) : ");
   scanf("%s", status);
   while (1) {
     if (strcmp(status, "actif") == 0 || strcmp(status, "inactif") == 0) {
@@ -207,12 +225,13 @@ int add(const char file_path[]) {
       scanf("%s", status);
     }
   }
-
+ 
   write(file, status, strlen(status));
 
   close(file);
   return 0;
 }
+
 
 void reset_buffer(char *buffer, int size) {
   for (int i = 0; i < size; i++)
@@ -310,6 +329,7 @@ int init_search(const char file_path[]) {
   close(file);
   return EXIT_SUCCESS;
 }
+
 
 int main() {
   int choice;
