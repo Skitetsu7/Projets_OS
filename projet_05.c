@@ -160,31 +160,40 @@ int add(const char file_path[]) {
   char email[50];
   char phonenumber[20];
   char status[10];
+  char tab[300];
+  int j=1;
   
   int file = open(file_path, O_WRONLY | O_APPEND);
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
     return -1;
   }
-
-  write(file, "\n", 1); // to go on the next line
-
+  tab[0]='\n';
   printf("Please, write your name : ");
   scanf("%s", name);
-  write(file, name, strlen(name));
-  write(file, " ", 1); // to separe by a space in the file
-
+  
+  for(int i=0;name[i]!='\0';i++){
+    tab[j]=name[i];
+    j++;
+  }
+  tab[j]= ' ';
+  j++;
   printf("Please, write your firstname : ");
   scanf("%s", firstname);
-  write(file, firstname, strlen(firstname));
-  write(file, " ", 1);
-
+  for(int i=0;firstname[i]!='\0';i++){
+    tab[j]=firstname[i];
+    j++;
+  }
+  tab[j]= ' ';
+  j++;
   printf("Please, write your phone number : ");
   scanf("%s", phonenumber);
-  write(file, phonenumber, strlen(phonenumber));
-  write(file, " ", 1);
-
-
+  for(int i=0;phonenumber[i]!='\0';i++){
+    tab[j]=phonenumber[i];
+    j++;
+  }
+  tab[j]= ' ';
+  j++;
   printf("Please, write your email who don't already exist : ");
   scanf("%s", email);
   int file_read = open(file_path, O_RDONLY);
@@ -210,10 +219,12 @@ int add(const char file_path[]) {
         scanf("%s", email);
     }
     }
-  write(file, email, strlen(email));
-  write(file, " ", 1);
-
-
+  for(int i=0;email[i]!='\0';i++){
+    tab[j]=email[i];
+    j++;
+  }
+  tab[j]=' ';
+  j++;
   printf("Please, write your status (actif or inactif) : ");
   scanf("%s", status);
   while (1) {
@@ -225,12 +236,15 @@ int add(const char file_path[]) {
       scanf("%s", status);
     }
   }
- 
-  write(file, status, strlen(status));
-
+  for(int i=0;status[i]!='\0';i++){
+    tab[j]=status[i];
+    j++;
+  } 
+  write(file,tab,j);
   close(file);
   return 0;
 }
+
 
 
 void reset_buffer(char *buffer, int size) {
