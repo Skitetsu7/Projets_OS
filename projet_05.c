@@ -7,7 +7,7 @@
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
-const char path[] = "/Users/sacha_ismailov/Downloads/tp5_base_de_donné.txt";
+const char path[] = "tp5_base_de_données.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
    */
