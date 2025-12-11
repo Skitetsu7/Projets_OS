@@ -314,7 +314,15 @@ int init_search(const char file_path[]) {
     printf("ERROR : Opening file failed;\n");
     return EXIT_FAILURE;
   }
-  // avoid overflow
+  /*
+  Avoid buffer overflow read work a certain way, it fill our buffer
+  with the file content but if it arrive at the end, he will not fill
+  anymore our buffer. So  we have to do 2 while, the first one is 
+  avoyding the buffer overflow becauses when we use read, read keep 
+  an index to mark where it stopped. So when he read 1024 bytes, 
+  it launch the second while where we run through the line and fill the line
+  buffer until it reach the end of the line
+  */
   while ((bytes = read(file, buff, sizeof(buff))) > 0)
   {
 
