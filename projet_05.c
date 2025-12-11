@@ -7,7 +7,7 @@
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
-const char path[] = "tp5_base_de_donné.txt";
+const char path[] = "/Users/sacha_ismailov/Downloads/tp5_base_de_donné.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
    */
@@ -297,6 +297,7 @@ int init_search(const char file_path[]) {
   char buff[1024];
   int i = 0;
   int j = 0;
+  unsigned int bytes;
   int occurrence = 0;
   // ask useer
   printf("Research email :\n");
@@ -313,21 +314,26 @@ int init_search(const char file_path[]) {
     printf("ERROR : Opening file failed;\n");
     return EXIT_FAILURE;
   }
-  int bytes = read(file, buff, sizeof(line));
+  // avoid overflow
+  while ((bytes = read(file, buff, sizeof(buff))) > 0)
+  {
 
-  while (i < bytes) {
-    line[j] = buff[i];
-    if (line[j] == '\n') {
-      occurrence += search_str(word, line, ' ', ';');
-      reset_buffer(line, len_str(line));
-      j = -1;
-    }
-    j++;
-    i++;
+    while (i < bytes) {
+        line[j] = buff[i];
+        if (line[j] == '\n') {
+          occurrence += search_str(word, line, ' ', ';');
+          reset_buffer(line, len_str(line));
+          j = -1;
+        }
+        j++;
+        i++;
+      }
+      i=0;
+      // printf("occurence :%d\n", occurrence);
   }
-  // printf("occurence :%d\n", occurrence);
-  close(file);
-  return EXIT_SUCCESS;
+      close(file);
+      return EXIT_SUCCESS;
+
 }
 
 
