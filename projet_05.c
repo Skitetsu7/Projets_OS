@@ -152,100 +152,6 @@ int suppression(const char file_path[]) {
     return 0;
 }
 
-int add(const char file_path[]) {
-  char buffer[BUFFER_SIZE];
-  char name[20];
-  char firstname[20];
-  char email[50];
-  char phonenumber[20];
-  char status[10];
-  char tab[300];
-  int j=1;
-  
-  int file = open(file_path, O_WRONLY | O_APPEND);
-  if (file == -1) {
-    perror("Erreur d'ouverture du fichier");
-    return -1;
-  }
-  tab[0]='\n';
-  printf("Please, write your name : ");
-  scanf("%s", name);
-  
-  for(int i=0;name[i]!='\0';i++){
-    tab[j]=name[i];
-    j++;
-  }
-  tab[j]= ' ';
-  j++;
-  printf("Please, write your firstname : ");
-  scanf("%s", firstname);
-  for(int i=0;firstname[i]!='\0';i++){
-    tab[j]=firstname[i];
-    j++;
-  }
-  tab[j]= ' ';
-  j++;
-  printf("Please, write your phone number : ");
-  scanf("%s", phonenumber);
-  for(int i=0;phonenumber[i]!='\0';i++){
-    tab[j]=phonenumber[i];
-    j++;
-  }
-  tab[j]= ' ';
-  j++;
-  printf("Please, write your email who don't already exist : ");
-  scanf("%s", email);
-  int file_read = open(file_path, O_RDONLY);
-  if (file_read == -1) {
-        perror("Erreur d'ouverture du fichier");
-        return EXIT_FAILURE;
-    }
-    int bytes_read = read(file_read, buffer, BUFFER_SIZE);
-  if (bytes_read < 0) {
-        perror("read");
-        close(file_read);
-        return EXIT_FAILURE;
-    }
-    buffer[bytes_read] = '\0'; // close the buffer
-    close(file_read);
-  while (strstr(buffer, email) != NULL || strchr(email, '@') == NULL || email[0] == '@' || email[strlen(email)-1] == '@') {
-    if(strstr(buffer, email)){
-        printf("this email already exist, give another one : ");
-        scanf("%s", email);
-    }
-    else{
-        printf("Please give a email with an '@' and one character before and after the '@' : ");
-        scanf("%s", email);
-    }
-    }
-  for(int i=0;email[i]!='\0';i++){
-    tab[j]=email[i];
-    j++;
-  }
-  tab[j]=' ';
-  j++;
-  printf("Please, write your status (actif or inactif) : ");
-  scanf("%s", status);
-  while (1) {
-    if (strcmp(status, "actif") == 0 || strcmp(status, "inactif") == 0) {
-      break;
-
-    } else {
-      printf("Please give a value between (actif or inactif) : ");
-      scanf("%s", status);
-    }
-  }
-  for(int i=0;status[i]!='\0';i++){
-    tab[j]=status[i];
-    j++;
-  } 
-  write(file,tab,j);
-  close(file);
-  return 0;
-}
-
-
-
 void reset_buffer(char *buffer, int size) {
   for (int i = 0; i < size; i++)
     buffer[i] = 0;
@@ -381,30 +287,9 @@ int init_search(const char file_path[]) {
       return EXIT_SUCCESS;
 
 }
-void receive_data(char word_tab[5][256]){
-  printf("Please, write your name : ");
-  scanf("%s",word_tab[0]);
 
-  printf("Please, write your firstname : ");
-  scanf("%s",word_tab[1]);
 
-  //a phone number = 10 digit
-  while (!valid_char(word_tab[2])){
-    printf("Please, write your Phone number : ");
-    scanf("%s",word_tab[2]);
-  }
-  // an email adress
-  while (1!=search_str("@",word_tab[3],'*',0)){
-    printf("Please, write your email who don't already exist : ");
-    scanf("%s",word_tab[3]);
-  }
 
-  while(!search_str(word_tab[4],"actif inactif\n",' ','\n')){
-    printf("Please, write your status (actif or inactif) : ");
-    scanf("%s",word_tab[4]);
-  }
-    
-}
 
 int main() {
   int choice;
