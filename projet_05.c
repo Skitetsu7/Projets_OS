@@ -30,8 +30,7 @@ void print_BD(int file) {
 
         } 
         else {                                   // if actif member
-            strcpy(actif_member[actif_count], line); // copy the line in actif
-                                                    // member
+            strcpy(actif_member[actif_count], line); // copy the line in actif  member
             actif_count++;                           // increase the number of actif
         }
       }
