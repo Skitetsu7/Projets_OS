@@ -84,7 +84,6 @@ void print_BD(int file) {
   }
 }
 
-
 int suppression(const char file_path[]) {
   char email[50];
   char buffer[BUFFER_SIZE];
@@ -168,7 +167,7 @@ int mix_char(char *receiver, char *sended, int start){
   return start;
 }
 
-int valid_char(char* word){
+int valid_digit(char* word){
   int i = 0;
   while(word[i]){
     if ('0'<=word[i]&& word[i]<='9')
@@ -186,14 +185,13 @@ int len_str(char *buff) {
   return len;
 }
 
-
 int search_str(char *word, char *sentence, char separator, char line_end) {
   int i = 0;
   int j = 0;
   int state[3];
   int occurrence = 0;
   while (i < len_str(sentence) ) {
-    printf("sentence[%d] = %c == word[%d] %c\n",i,sentence[i],j,word[j]);
+    //printf("sentence[%d] = %c == word[%d] %c\n",i,sentence[i],j,word[j]);
     if (sentence[i] == word[j]) {
       j++;
       
@@ -224,13 +222,12 @@ int search_str(char *word, char *sentence, char separator, char line_end) {
   return occurrence;
 }
 
-
-int email_valid(int fb,char *email){
+int email_invalid(int fb,char *email){
   char content[BUFFER_SIZE];
   if(1!=search_str("@",email,'*',0)){
     return 1;
   };
-  printf("okay sur le nombre de @\n");
+  //printf("okay sur le nombre de @\n");
   int bytes_read = read(fb, content, BUFFER_SIZE);
   if (bytes_read < 0) {
         perror("read");
@@ -238,7 +235,6 @@ int email_valid(int fb,char *email){
         return EXIT_FAILURE;
   }
   content[bytes_read] = '\0'; // close the buffer
-  close(fb);
 
   if (search_str(email, content, ' ','\n')){
     return 1;
@@ -246,7 +242,7 @@ int email_valid(int fb,char *email){
   return 0;
 }
 
-int receive_data(char word_tab[5][1024],int fb){
+void receive_data(char word_tab[5][1024],int fb){
   printf("Please, write your name : ");
   scanf("%s",word_tab[0]);
 
@@ -254,12 +250,12 @@ int receive_data(char word_tab[5][1024],int fb){
   scanf("%s",word_tab[1]);
 
   //a phone number = 10 digit
-  while (!valid_char(word_tab[2])){
+  while (strlen(word_tab[2])!=10 || !valid_digit(word_tab[2]) ){
     printf("Please, write your Phone number : ");
     scanf("%s",word_tab[2]);
   }
   // an email adress
-  while (email_valid(fb,word_tab[3])){
+  while (email_invalid(fb,word_tab[3])){
     printf("Please, write your email who don't already exist : ");
     scanf("%s",word_tab[3]);
   }
@@ -273,27 +269,13 @@ int receive_data(char word_tab[5][1024],int fb){
 
 int add(const char file_path[]) {
   char buffer[BUFFER_SIZE];
-  /*
-  char name[20];
-  char firstname[20];
-  char email[50];
-  char phonenumber[20];
-  char status[10];
-  char tab[300];
-  int j=1;
-  */
-  //------------------
   const int input = 5;
   const int max_len = 1024;
   
   char full[BUFFER_SIZE]; //receiver
   char usr_input[input][max_len]; //tab de tab
-
   
-
-  
-  //------------------
-  int file = open(file_path, O_RDONLY);
+  int file = open(file_path, O_RDWR | O_APPEND);
   if (file == -1) {
     perror("Erreur d'ouverture du fichier");
     return -1;
@@ -301,22 +283,13 @@ int add(const char file_path[]) {
 
   receive_data(usr_input,file);
   
-  close(file);
-
   int start_index =1;
   //tu loop pour concatainer petit à petit
   full[0] = '\n';
   for (int i = 0; i< input;i++){
     start_index = mix_char(full,usr_input[i],start_index);
   }
-  full[len_str(full)+1] = '\n';
-
-  file = 0;
-  file = open(file_path, O_WRONLY | O_APPEND);
-  if (file == -1) {
-    perror("Erreur d'ouverture du fichier");
-    return -1;
-  }
+  full[len_str(full)] = '\n';
 
   write(file,full,len_str(full));
   close(file);
@@ -350,7 +323,6 @@ int init_search(const char file_path[]) {
     printf("please enter an email (or @ to cancel):");
     scanf("%s", word);
   }
-
   int file = open(file_path, O_RDONLY);
   if (file == -1) {
     printf("ERROR : Opening file failed;\n");
@@ -367,11 +339,13 @@ int init_search(const char file_path[]) {
   */
   while ((bytes = read(file, buff, sizeof(buff))) > 0)
   {
-
     while (i < bytes) {
         line[j] = buff[i];
         if (line[j] == '\n') {
           occurrence += search_str(word, line, ' ', ';');
+          if(search_str(word, line, ' ', ';')){
+            printf("%s",line);
+          }
           reset_buffer(line, len_str(line));
           j = -1;
         }
@@ -379,11 +353,10 @@ int init_search(const char file_path[]) {
         i++;
       }
       i=0;
-      // printf("occurence :%d\n", occurrence);
+      printf("occurence :%d\n", occurrence);
   }
       close(file);
       return EXIT_SUCCESS;
-
 }
 
 int main() {
@@ -417,7 +390,7 @@ int main() {
       break;
     }
     default:
-      printf("Invalid choice .\n");
+      printf("Invalid choice .");
       break;
     }
   }
