@@ -225,6 +225,104 @@ int search_str(char *word, char *sentence, char separator, char line_end) {
 }
 
 
+int email_valid(int fb,char *email){
+  char content[BUFFER_SIZE];
+  if(1!=search_str("@",email,'*',0)){
+    return 1;
+  };
+  printf("okay sur le nombre de @\n");
+  int bytes_read = read(fb, content, BUFFER_SIZE);
+  if (bytes_read < 0) {
+        perror("read");
+        close(fb);
+        return EXIT_FAILURE;
+  }
+  content[bytes_read] = '\0'; // close the buffer
+  close(fb);
+
+  if (search_str(email, content, ' ','\n')){
+    return 1;
+  }
+  return 0;
+}
+
+int receive_data(char word_tab[5][1024],int fb){
+  printf("Please, write your name : ");
+  scanf("%s",word_tab[0]);
+
+  printf("Please, write your firstname : ");
+  scanf("%s",word_tab[1]);
+
+  //a phone number = 10 digit
+  while (!valid_char(word_tab[2])){
+    printf("Please, write your Phone number : ");
+    scanf("%s",word_tab[2]);
+  }
+  // an email adress
+  while (email_valid(fb,word_tab[3])){
+    printf("Please, write your email who don't already exist : ");
+    scanf("%s",word_tab[3]);
+  }
+
+  while(!search_str(word_tab[4],"actif inactif\n",' ','\n')){
+    printf("Please, write your status (actif or inactif) : ");
+    scanf("%s",word_tab[4]);
+  }
+    
+}
+
+int add(const char file_path[]) {
+  char buffer[BUFFER_SIZE];
+  /*
+  char name[20];
+  char firstname[20];
+  char email[50];
+  char phonenumber[20];
+  char status[10];
+  char tab[300];
+  int j=1;
+  */
+  //------------------
+  const int input = 5;
+  const int max_len = 1024;
+  
+  char full[BUFFER_SIZE]; //receiver
+  char usr_input[input][max_len]; //tab de tab
+
+  
+
+  
+  //------------------
+  int file = open(file_path, O_RDONLY);
+  if (file == -1) {
+    perror("Erreur d'ouverture du fichier");
+    return -1;
+  }
+
+  receive_data(usr_input,file);
+  
+  close(file);
+
+  int start_index =0;
+  //tu loop pour concatainer petit à petit
+  full[0] = '\n';
+  for (int i = 1; i< input;i++){
+    start_index = mix_char(full,usr_input[i],start_index);
+  }
+  full[len_str(full)+1] = '\n';
+
+  file = 0;
+  file = open(file_path, O_WRONLY | O_APPEND);
+  if (file == -1) {
+    perror("Erreur d'ouverture du fichier");
+    return -1;
+  }
+
+  write(file,full,len_str(full));
+  close(file);
+  reset_buffer(full,1024);
+  return 0;
+}
 int take_input(char *usrin, char asked) {
   for (int i = 0; i < len_str(usrin); i++) {
     if (usrin[i] == asked) {
@@ -287,9 +385,6 @@ int init_search(const char file_path[]) {
       return EXIT_SUCCESS;
 
 }
-
-
-
 
 int main() {
   int choice;
