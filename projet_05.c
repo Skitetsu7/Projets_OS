@@ -7,7 +7,7 @@
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
-const char path[] = "tp5_base_de_données.txt";
+const char path[] = "/Users/sacha_ismailov/Downloads/tp5_base_de_donné.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
    */
@@ -251,6 +251,27 @@ void reset_buffer(char *buffer, int size) {
     buffer[i] = 0;
 }
 
+int mix_char(char *receiver, char *sended, int start){
+  int i = 0;
+  while(sended[i]){
+    receiver[start] = sended[i];
+    start++;
+    i++;
+  }
+  receiver[start++] = ' ';
+  return start;
+}
+
+int valid_char(char* word){
+  int i = 0;
+  while(word[i]){
+    if ('0'<=word[i]&& word[i]<='9')
+    {i++;}
+    else{return 0;}
+  }
+  return i;
+}
+
 int len_str(char *buff) {
   int len = 0;
   while (buff[len] != 0) {
@@ -259,32 +280,35 @@ int len_str(char *buff) {
   return len;
 }
 
+
 int search_str(char *word, char *sentence, char separator, char line_end) {
   int i = 0;
   int j = 0;
   int state[3];
   int occurrence = 0;
-  while (i < len_str(sentence) - 1) {
+  while (i < len_str(sentence) ) {
+    printf("sentence[%d] = %c == word[%d] %c\n",i,sentence[i],j,word[j]);
     if (sentence[i] == word[j]) {
       j++;
+      
       if (j == len_str(word)) {
-        state[0] = !(j - i - 1); // start
-        state[1] = sentence[i + 1] == line_end ||
-                   sentence[i + 1] == separator; // end or separator after
-        state[2] = sentence[i - j] == separator; // separator before
+        if (separator =='*'){
+          occurrence++;
+          j=0;
+        }
+        else {
+          state[0] = !(j - i - 1); // start
+          state[1] = sentence[i + 1] == line_end ||
+                    sentence[i + 1] == separator; // end or separator after
+          state[2] = sentence[i - j] == separator; // separator before
 
-        if (state[0] && state[1]) { // word is on the start
-          occurrence++;
-          printf("%s", sentence);
+          if ((state[0] && state[1])||(state[2]&&state[1])) {
+            occurrence++;
+          }
+          state[0] = 0;
+          state[1] = 0;
+          state[2] = 0;
         }
-        if (state[2] && state[1]) { // word is on the end or somewhere else
-          occurrence++;
-          printf("%s", sentence);
-        }
-        // reset checker
-        state[0] = 0;
-        state[1] = 0;
-        state[2] = 0;
       }
     } else {
       j = 0;
@@ -293,6 +317,7 @@ int search_str(char *word, char *sentence, char separator, char line_end) {
   }
   return occurrence;
 }
+
 
 int take_input(char *usrin, char asked) {
   for (int i = 0; i < len_str(usrin); i++) {
@@ -356,7 +381,30 @@ int init_search(const char file_path[]) {
       return EXIT_SUCCESS;
 
 }
+void receive_data(char word_tab[5][256]){
+  printf("Please, write your name : ");
+  scanf("%s",word_tab[0]);
 
+  printf("Please, write your firstname : ");
+  scanf("%s",word_tab[1]);
+
+  //a phone number = 10 digit
+  while (!valid_char(word_tab[2])){
+    printf("Please, write your Phone number : ");
+    scanf("%s",word_tab[2]);
+  }
+  // an email adress
+  while (1!=search_str("@",word_tab[3],'*',0)){
+    printf("Please, write your email who don't already exist : ");
+    scanf("%s",word_tab[3]);
+  }
+
+  while(!search_str(word_tab[4],"actif inactif\n",' ','\n')){
+    printf("Please, write your status (actif or inactif) : ");
+    scanf("%s",word_tab[4]);
+  }
+    
+}
 
 int main() {
   int choice;
