@@ -303,10 +303,10 @@ int add(const char file_path[]) {
   
   close(file);
 
-  int start_index =0;
+  int start_index =1;
   //tu loop pour concatainer petit à petit
   full[0] = '\n';
-  for (int i = 1; i< input;i++){
+  for (int i = 0; i< input;i++){
     start_index = mix_char(full,usr_input[i],start_index);
   }
   full[len_str(full)+1] = '\n';
