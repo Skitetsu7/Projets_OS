@@ -20,6 +20,7 @@ void print_BD(int file) {
   unsigned int inactif_count = 0;
   unsigned int no_statut_count = 0;
   char ch;
+
   while (read(file, &ch, 1) != 0) {  // read the file char by char
     if (ch == '\n') {                // line end
       line[index] = '\0';            // string end
@@ -84,24 +85,24 @@ void print_BD(int file) {
   }
 }
 
-int suppression(const char file_path[]) {
+int suppression(int file) {
   char email[50];
   char buffer[BUFFER_SIZE];
   bool found = false;
-  int file = open(file_path, O_RDONLY), line_end = 0, right = 0;
-  if (file == -1) {
-    perror("Erreur d'ouverture du fichier");
-    return EXIT_FAILURE;
-  }
+  int line_end = 0;
+  int right = 0;
   int bytes_read = read(file, buffer, BUFFER_SIZE);
   if (bytes_read < 0) {
     perror("read");
     close(file);
     return EXIT_FAILURE;
   }
-  close(file);
   printf("provides a (full) email address to delete: ");
   scanf("%s", email);     
+  if(len_str(email)>sizeof(email)){
+  printf("input to long please restart operation\n");
+  return -1;
+  }
   char *search = strstr(email, "@");
   for (int j = 0; j <= bytes_read; j++) { // loop on the file
     if (j == bytes_read || buffer[j] == '\n') { // stop each buffer by a line (j==bytes_real because at end we don't have \n)
@@ -141,13 +142,20 @@ int suppression(const char file_path[]) {
             }
         }
     }
-    file = open(file_path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
+    close(file);
+    file = open(path, O_WRONLY | O_TRUNC); // necessary to write to the file to delete
     if (file == -1) {
         perror("write");
         return EXIT_FAILURE;
     }
+    
     write(file, buffer, bytes_read);
     close(file);
+    file = open(path , O_RDWR |  O_APPEND);
+    if (file == -1) {
+      perror("Erreur d'ouverture du fichier");
+      return EXIT_FAILURE;
+    }
     return 0;
 }
 
@@ -242,46 +250,61 @@ int email_invalid(int fb,char *email){
   return 0;
 }
 
-void receive_data(char word_tab[5][1024],int fb){
+int receive_data(char word_tab[5][BUFFER_SIZE],int fb){
   printf("Please, write your name : ");
   scanf("%s",word_tab[0]);
-
+  if(len_str(word_tab[0])>sizeof(word_tab[0])){
+    printf("input to long please restart operation\n");
+    return -1;
+  }
   printf("Please, write your firstname : ");
   scanf("%s",word_tab[1]);
-
+  if(len_str(word_tab[1])>sizeof(word_tab[1])){
+    printf("input to long please restart operation\n");
+    return -1;
+  }
   //a phone number = 10 digit
   while (strlen(word_tab[2])!=10 || !valid_digit(word_tab[2]) ){
     printf("Please, write your Phone number : ");
     scanf("%s",word_tab[2]);
+    if(len_str(word_tab[2])>sizeof(word_tab[2])){
+      printf("input to long please restart operation\n");
+      return -1;
+    }
   }
   // an email adress
   while (email_invalid(fb,word_tab[3])){
     printf("Please, write your email who don't already exist : ");
     scanf("%s",word_tab[3]);
+    if(len_str(word_tab[3])>sizeof(word_tab[2])){
+      printf("input to long please restart operation\n");
+      return -1;
+    }
   }
 
   while(!search_str(word_tab[4],"actif inactif\n",' ','\n')){
     printf("Please, write your status (actif or inactif) : ");
     scanf("%s",word_tab[4]);
+    if(len_str(word_tab[4])>sizeof(word_tab[4])){
+      printf("input to long please restart operation\n");
+      return -1;
+    }
   }
-    
+  return 1;
 }
 
-int add(const char file_path[]) {
+int add(int file) {
   char buffer[BUFFER_SIZE];
   const int input = 5;
   const int max_len = 1024;
   
   char full[BUFFER_SIZE]; //receiver
-  char usr_input[input][max_len]; //tab de tab
-  
-  int file = open(file_path, O_RDWR | O_APPEND);
-  if (file == -1) {
-    perror("Erreur d'ouverture du fichier");
+  char usr_input[5][BUFFER_SIZE]; //tab de tab
+
+  if (receive_data(usr_input,file) == -1){
+    printf("abort add process\n");
     return -1;
   }
-
-  receive_data(usr_input,file);
   
   int start_index =1;
   //tu loop pour concatainer petit à petit
@@ -292,10 +315,11 @@ int add(const char file_path[]) {
   full[len_str(full)] = '\n';
 
   write(file,full,len_str(full));
-  close(file);
+
   reset_buffer(full,1024);
   return 0;
 }
+
 int take_input(char *usrin, char asked) {
   for (int i = 0; i < len_str(usrin); i++) {
     if (usrin[i] == asked) {
@@ -305,14 +329,14 @@ int take_input(char *usrin, char asked) {
   return 0;
 }
 
-int init_search(const char file_path[]) {
+int init_search(int file) {
   // init
   char word[256];
   char line[1024];
   char buff[1024];
   int i = 0;
   int j = 0;
-  unsigned int bytes;
+  unsigned int bytes = 0;
   int occurrence = 0;
   // ask useer
   printf("Research email :\n");
@@ -322,11 +346,6 @@ int init_search(const char file_path[]) {
   while (!take_input(word, '@') && len_str(word) < 256) {
     printf("please enter an email (or @ to cancel):");
     scanf("%s", word);
-  }
-  int file = open(file_path, O_RDONLY);
-  if (file == -1) {
-    printf("ERROR : Opening file failed;\n");
-    return EXIT_FAILURE;
   }
   /*
   Avoid buffer overflow read work a certain way, it fill our buffer
@@ -355,43 +374,56 @@ int init_search(const char file_path[]) {
       i=0;
       printf("occurence :%d\n", occurrence);
   }
-      close(file);
+      
       return EXIT_SUCCESS;
 }
 
 int main() {
   int choice;
+  int file = open(path , O_RDWR | O_APPEND);
+  if (file == -1) {
+    perror("Erreur d'ouverture du fichier");
+    return EXIT_FAILURE;
+  }
+
   while (1) { // boucle infinie
-    printf("\n===== MENU =====\n");
-    printf("1. Display \n");
-    printf("2. Search \n");
-    printf("3. Delete \n");
-    printf("4. Add \n");
-    printf("0. Leave \n");
-    printf("Give your choice : ");
-    scanf("%d", &choice);
-    printf("\n");
-    switch (choice) {
-    case 0:
-      printf("This is the end\n");
-      return 0;
-    case 1:
-      print_BD(open(path, O_RDONLY));
-      break;
-    case 2:
-      init_search(path);
-      break;
-    case 3: {
-      suppression(path);
-      break;
-    }
-    case 4: {
-      add(path);
-      break;
-    }
-    default:
-      printf("Invalid choice .");
-      break;
-    }
+  //set index of the file on 0
+  choice = -1;
+  if (lseek(file, 0, SEEK_SET) == -1) {
+  perror("Erreur lors du repositionnement du pointeur");
+  close(file);
+  return -1;
+  }
+  printf("\n===== MENU =====\n");
+  printf("1. Display \n");
+  printf("2. Search \n");
+  printf("3. Delete \n");
+  printf("4. Add \n");
+  printf("0. Leave \n");
+  
+  while (!(choice<5 && choice>-1)){
+  printf("Give your choice : ");
+  scanf("%d", &choice);}
+  printf("\n");
+  switch (choice) {
+  case 0:
+    printf("This is the end\n");
+    return 0;
+  case 1:
+    print_BD(file);
+    break;
+  case 2:
+    init_search(file);
+    break;
+  case 3: {
+    suppression(file);
+    break;
+  }
+  case 4: {
+    add(file);
+    break;
+  }
+
+  }
   }
 }
