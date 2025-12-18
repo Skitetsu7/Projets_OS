@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #define BUFFER_SIZE 1024
 #define BUFFER_ACTIF_MEMBER 100
 #define BUFFER_INACTIF_MEMBER 100
+
 const char path[] = "tp5_base_de_données.txt";
 void print_BD(int file) {
   /*print the list of actif and inactif members
@@ -354,8 +356,7 @@ int init_search(int file) {
   it launch the second while where we run through the line and fill the line
   buffer until it reach the end of the line
   */
-  while ((bytes = read(file, buff, sizeof(buff))) > 0)
-  {
+  while ((bytes = read(file, buff, sizeof(buff))) > 0){
     while (i < bytes) {
         line[j] = buff[i];
         if (line[j] == '\n') {
@@ -370,9 +371,9 @@ int init_search(int file) {
         i++;
       }
       i=0;
-      printf("occurence :%d\n", occurrence);
-  }
       
+  }
+      printf("occurence :%d\n", occurrence);
       return EXIT_SUCCESS;
 }
 
