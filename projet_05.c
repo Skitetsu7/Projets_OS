@@ -99,7 +99,7 @@ int suppression(int file) {
   }
   printf("provides a (full) email address to delete: ");
   scanf("%s", email);     
-  if(len_str(email)>sizeof(email)){
+  if(strlen(email)>sizeof(email)){
   printf("input to long please restart operation\n");
   return -1;
   }
@@ -185,25 +185,17 @@ int valid_digit(char* word){
   return i;
 }
 
-int len_str(char *buff) {
-  int len = 0;
-  while (buff[len] != 0) {
-    len++;
-  }
-  return len;
-}
-
 int search_str(char *word, char *sentence, char separator, char line_end) {
   int i = 0;
   int j = 0;
   int state[3];
   int occurrence = 0;
-  while (i < len_str(sentence) ) {
+  while (i < strlen(sentence) ) {
     //printf("sentence[%d] = %c == word[%d] %c\n",i,sentence[i],j,word[j]);
     if (sentence[i] == word[j]) {
       j++;
       
-      if (j == len_str(word)) {
+      if (j == strlen(word)) {
         if (separator =='*'){
           occurrence++;
           j=0;
@@ -232,60 +224,66 @@ int search_str(char *word, char *sentence, char separator, char line_end) {
 
 int email_invalid(int fb,char *email){
   char content[BUFFER_SIZE];
+  int bytes_read = 0;
+  if (lseek(fb, 0, SEEK_SET) == -1) {
+  perror("Erreur lors du repositionnement du pointeur");
+  close(fb);
+  return -1;
+  }
+
   if(1!=search_str("@",email,'*',0)){
     return 1;
   };
   //printf("okay sur le nombre de @\n");
-  int bytes_read = read(fb, content, BUFFER_SIZE);
-  if (bytes_read < 0) {
-        perror("read");
-        close(fb);
-        return EXIT_FAILURE;
-  }
-  content[bytes_read] = '\0'; // close the buffer
-
+  while ((bytes_read = read(fb, content, BUFFER_SIZE))> 0){
   if (search_str(email, content, ' ','\n')){
     return 1;
+  }
+
   }
   return 0;
 }
 
 int receive_data(char word_tab[5][BUFFER_SIZE],int fb){
+  word_tab[0][0] = 0; //reset buffer to avoid bug
   printf("Please, write your name : ");
   scanf("%s",word_tab[0]);
-  if(len_str(word_tab[0])>sizeof(word_tab[0])){
+  if(strlen(word_tab[0])>sizeof(word_tab[0])){
     printf("input to long please restart operation\n");
     return -1;
   }
+  word_tab[1][0] = 0;//reset buffer to avoid bug;
   printf("Please, write your firstname : ");
   scanf("%s",word_tab[1]);
-  if(len_str(word_tab[1])>sizeof(word_tab[1])){
+  if(strlen(word_tab[1])>sizeof(word_tab[1])){
     printf("input to long please restart operation\n");
     return -1;
   }
   //a phone number = 10 digit
+  word_tab[2][0] = 0;//reset buffer to avoid bug
   while (strlen(word_tab[2])!=10 || !valid_digit(word_tab[2]) ){
     printf("Please, write your Phone number : ");
     scanf("%s",word_tab[2]);
-    if(len_str(word_tab[2])>sizeof(word_tab[2])){
+    if(strlen(word_tab[2])>sizeof(word_tab[2])){
       printf("input to long please restart operation\n");
       return -1;
     }
   }
-  // an email adress
+  // an email adress]
+  word_tab[3][0] = 0;//reset buffer to avoid bug
   while (email_invalid(fb,word_tab[3])){
     printf("Please, write your email who don't already exist : ");
     scanf("%s",word_tab[3]);
-    if(len_str(word_tab[3])>sizeof(word_tab[2])){
+    if(strlen(word_tab[3])>sizeof(word_tab[2])){
       printf("input to long please restart operation\n");
       return -1;
     }
   }
-
+  word_tab[4][0] = 0;//reset buffer to avoid bug;
   while(!search_str(word_tab[4],"actif inactif\n",' ','\n')){
     printf("Please, write your status (actif or inactif) : ");
     scanf("%s",word_tab[4]);
-    if(len_str(word_tab[4])>sizeof(word_tab[4])){
+    if(strlen(word_tab[4])>sizeof(word_tab[4])){
       printf("input to long please restart operation\n");
       return -1;
     }
@@ -312,16 +310,16 @@ int add(int file) {
   for (int i = 0; i< input;i++){
     start_index = mix_char(full,usr_input[i],start_index);
   }
-  full[len_str(full)] = '\n';
+  full[strlen(full)] = '\0';
 
-  write(file,full,len_str(full));
+  write(file,full,strlen(full));
 
   reset_buffer(full,1024);
   return 0;
 }
 
 int take_input(char *usrin, char asked) {
-  for (int i = 0; i < len_str(usrin); i++) {
+  for (int i = 0; i < strlen(usrin); i++) {
     if (usrin[i] == asked) {
       return 1;
     }
@@ -343,7 +341,7 @@ int init_search(int file) {
   reset_buffer(word, 256);
 
   // wait for a decent input
-  while (!take_input(word, '@') && len_str(word) < 256) {
+  while (!take_input(word, '@') && strlen(word) < 256) {
     printf("please enter an email (or @ to cancel):");
     scanf("%s", word);
   }
@@ -365,7 +363,7 @@ int init_search(int file) {
           if(search_str(word, line, ' ', ';')){
             printf("%s",line);
           }
-          reset_buffer(line, len_str(line));
+          reset_buffer(line, strlen(line));
           j = -1;
         }
         j++;
@@ -408,6 +406,7 @@ int main() {
   switch (choice) {
   case 0:
     printf("This is the end\n");
+    close(file);
     return 0;
   case 1:
     print_BD(file);
@@ -423,7 +422,7 @@ int main() {
     add(file);
     break;
   }
-
+  choice = -1;
   }
   }
 }
